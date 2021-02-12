@@ -1,23 +1,34 @@
 #!/usr/bin/python3
 
-import os
-import pathlib
+import sys, os, pathlib, importlib
 from includes.Questions import Questions
 
 enquete = Questions()
-#enquete.ask("accept", "Welcome. Use this at your own risk. Continue?", True);
-print(enquete.questions)
 
 # Get the paths
 pwd = pathlib.Path(__file__).parent.absolute()
-print(type(pwd))
-#pwd_apps = os.path.join(os.fsdecode(pwd), '/applications')
-#print(pwd_apps)
-"""
+pwd_apps = pathlib.Path.joinpath(pwd, 'applications')
+pwd_apps_mandatory = pathlib.Path.joinpath(pwd_apps, 'mandatory')
+
+# Files to use
+files = []
+
 # Loop through the mandatory application files, collect an array
-for file in os.listdir(os.path.join(pwdapps, '/mandatory')):
+for file in os.listdir(pwd_apps_mandatory):
     filename = os.fsdecode(file)
     if not filename.endswith('.py'):
         continue
-    print(os.path.join(pwdapps, filename))
-"""
+    filename = pathlib.Path.joinpath(pwd_apps_mandatory, filename)
+    # Skip empty files
+    if (os.stat(filename).st_size < 10):
+        continue
+    files.append(filename)
+
+for file in files:
+    application = getattr(importlib.import_module('applications.mandatory.Setup'), file.stem)(enquete)
+    application.install()
+    #print(instance)
+    #instance.sayHi()
+    #instance = Setup()
+
+#print(enquete.questions)

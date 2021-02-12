@@ -8,5 +8,5 @@ class Questions:
         self.questions[key] = {"prompt":prompt, "default": default, "answer":answer}
         return answer
 
-    def prepare(self, key, prompt, default):
-        self.questions[key] = {"prompt":prompt, "default": default}
+    def getAnswer(self, key):
+        return self.questions[key]['answer'];
