@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
-import sys, os, pathlib, importlib
+import importlib
+import os
+import pathlib
+
 from includes.Questions import Questions
 
 enquete = Questions()
