@@ -1,4 +1,4 @@
-import os, pathlib, subprocess
+import os, pathlib, re, subprocess
 
 class Config:
 
@@ -11,6 +11,7 @@ class Config:
 
     def open(self, path):
         self.path = path;
+        self.handle = open(path, 'r+');
 
     def usesSpaceSeparator(self):
         self.separator = ' ';
@@ -20,4 +21,9 @@ class Config:
 
     def set(self, key, value):
         print('Setting '+key+' to '+value)
-        subprocess.call(["sed -i 's/^ *# *"+key+" *[^ ]*/"+key+self.separator+value+"' "+self.path+"'"], shell=True)
+        lines = self.handle.readlines()
+        self.handle.seek(0)
+        lines = map((lambda line: re.sub(r'^ *#* *'+key+'.*$', r''+key+self.separator+value, line, flags=re.IGNORECASE)), lines)
+        lines = list(lines)
+        self.handle.write(''.join(lines))
+        self.handle.truncate()
