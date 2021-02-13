@@ -1,6 +1,7 @@
 from includes.Application import Application
 from includes.Config import Config
 
+
 class Setup(Application):
 
     def install(self):
@@ -10,4 +11,3 @@ class Setup(Application):
         config_sshd = Config('/sshd_config.txt')
         config_sshd.usesSpaceSeparator()
         config_sshd.set('Port', self.getEnquete().getAnswer('port_ssh'))
-        

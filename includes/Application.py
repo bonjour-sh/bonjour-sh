@@ -1,5 +1,4 @@
 class Application:
-
     questions = []
     actions = []
 
@@ -14,5 +13,4 @@ class Application:
 
     def run(self, command):
         self.announce('Executing ' + command)
-        #self.editConfig()
-
+        # self.editConfig()

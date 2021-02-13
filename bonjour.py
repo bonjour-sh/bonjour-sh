@@ -23,15 +23,15 @@ for file in os.listdir(pwd_apps_mandatory):
         continue
     filename = pathlib.Path.joinpath(pwd_apps_mandatory, filename)
     # Skip empty files
-    if (os.stat(filename).st_size < 10):
+    if os.stat(filename).st_size < 10:
         continue
     files.append(filename)
 
 for file in files:
     application = getattr(importlib.import_module('applications.mandatory.Setup'), file.stem)(enquete)
     application.install()
-    #print(instance)
-    #instance.sayHi()
-    #instance = Setup()
+    # print(instance)
+    # instance.sayHi()
+    # instance = Setup()
 
-#print(enquete.questions)
+# print(enquete.questions)

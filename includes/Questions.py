@@ -4,8 +4,8 @@ class Questions:
         self.questions = {}
 
     def ask(self, key, prompt, default):
-        answer = input(prompt) 
-        self.questions[key] = {"prompt":prompt, "default": default, "answer":answer}
+        answer = input(prompt)
+        self.questions[key] = {"prompt": prompt, "default": default, "answer": answer}
         return answer
 
     def getAnswer(self, key):
