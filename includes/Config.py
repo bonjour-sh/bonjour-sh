@@ -14,10 +14,10 @@ class Config:
         self.path = path
         self.handle = open(path, 'r+')
 
-    def usesSpaceSeparator(self):
+    def use_space_separator(self):
         self.separator = ' '
 
-    def usesEqualsSeparator(self):
+    def use_equals_separator(self):
         self.separator = '='
 
     def set(self, key, value):
