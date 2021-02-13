@@ -15,7 +15,7 @@ class Config:
     def usesSpaceSeparator(self):
         self.separator = ' ';
 
-    def usesEqualsSeparator():
+    def usesEqualsSeparator(self):
         self.separator = '=';
 
     def set(self, key, value):
