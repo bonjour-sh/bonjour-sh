@@ -2,22 +2,22 @@ import os, pathlib, re, subprocess
 
 class Config:
 
-    path = '';
-    handle = '';
-    separator = ''; # keys and values are separated by
+    path = ''
+    handle = ''
+    separator = '' # keys and values are separated by
 
     def __init__(self, path):
         self.open(os.getcwd() + path)
 
     def open(self, path):
-        self.path = path;
-        self.handle = open(path, 'r+');
+        self.path = path
+        self.handle = open(path, 'r+')
 
     def usesSpaceSeparator(self):
-        self.separator = ' ';
+        self.separator = ' '
 
     def usesEqualsSeparator(self):
-        self.separator = '=';
+        self.separator = '='
 
     def set(self, key, value):
         print('Setting '+key+' to '+value)

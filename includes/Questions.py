@@ -9,4 +9,4 @@ class Questions:
         return answer
 
     def getAnswer(self, key):
-        return self.questions[key]['answer'];
+        return self.questions[key]['answer']

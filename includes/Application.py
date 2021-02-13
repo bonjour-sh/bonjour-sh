@@ -1,13 +1,13 @@
 class Application:
 
-    questions = [];
-    actions = [];
+    questions = []
+    actions = []
 
     def __init__(self, enquete):
         self.enquete = enquete
 
     def getEnquete(self):
-        return self.enquete;
+        return self.enquete
 
     def announce(self, message):
         print('Attention: ' + message)
