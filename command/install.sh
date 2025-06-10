@@ -46,16 +46,16 @@ _install_command() {
                     \;* | \#*) continue ;;
                 esac
                 # Collect value
-                _prompt_func_name="_${_installer_name}_prompt_${_env_key}"
-                if type "$_prompt_func_name" 2>/dev/null | grep -q 'function'; then
-                    _env_value=$("_${_installer_name}_prompt_${_env_key}" "$@")
+                _func="_${_installer_name}_prompt_${_env_key}"
+                if type "$_func" 2>/dev/null | grep -q 'function'; then
+                    _env_value=$("$_func" "$@")
                 else
                     _env_value=$(_input "$_env_key" "Provide $_env_key" "$_env_default" "$@")
                 fi
                 # Set the variable
                 eval "${_env_key}=\${_env_value}"
                 # Clean up
-                unset -v _env_key _env_default _prompt_func_name _env_value
+                unset -v _env_key _env_default _func _env_value
             done < "$_installer_env"
         fi
     done
