@@ -65,6 +65,10 @@ _install_command() {
     done
     # 2. (Non-interactive) Run selected installers
     for _installer_name in $_installers; do
+        _func="_${_installer_name}_install_${BONJOUR_OS}"
+        if type "$_func" 2>/dev/null | grep -q 'function'; then
+            "$_func" "$@"
+        fi
         "_${_installer_name}_install" "$@"
         # Clean up
         unset -v _installer_name
