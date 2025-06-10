@@ -32,8 +32,6 @@ _install_command() {
             . "${_installer_path}/${_installer_name}/${_installer_name}.${BONJOUR_OS}.sh"
         fi
         . "${_installer_path}/${_installer_name}/${_installer_name}.sh"
-        # Clean up
-        unset -v _installer_name
     done
     # 1. (Interactive) Collect input required for all selected installers
     for _installer_name in $_installers; do
@@ -60,8 +58,6 @@ _install_command() {
                 unset -v _env_key _env_default _prompt_func_name _env_value
             done < "$_installer_env"
         fi
-        # Clean up
-        unset -v _installer_name _installer_env
     done
     # 2. (Non-interactive) Run selected installers
     for _installer_name in $_installers; do
@@ -70,7 +66,5 @@ _install_command() {
             "$_func" "$@"
         fi
         "_${_installer_name}_install" "$@"
-        # Clean up
-        unset -v _installer_name
     done
 }
