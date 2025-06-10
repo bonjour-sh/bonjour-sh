@@ -59,7 +59,18 @@ _install_command() {
             done < "$_installer_env"
         fi
     done
-    # 2. (Non-interactive) Run selected installers
+    # 2. (Potentially-interactive) Run pre-installers
+    for _installer_name in $_installers; do
+        _func="_${_installer_name}_pre_install_${BONJOUR_OS}"
+        if type "$_func" 2>/dev/null | grep -q 'function'; then
+            "$_func" "$@"
+        fi
+        _func="_${_installer_name}_pre_install"
+        if type "$_func" 2>/dev/null | grep -q 'function'; then
+            "$_func" "$@"
+        fi
+    done
+    # 3. (Non-interactive) Run installers
     for _installer_name in $_installers; do
         _func="_${_installer_name}_install_${BONJOUR_OS}"
         if type "$_func" 2>/dev/null | grep -q 'function'; then
