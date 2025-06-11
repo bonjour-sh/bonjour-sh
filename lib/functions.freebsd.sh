@@ -7,7 +7,7 @@ _package() {
         install)
             pkg install -y $2
             ;;
-        uninstall)
+        purge)
             pkg delete $2
             ;;
         upgrade)

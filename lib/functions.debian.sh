@@ -7,7 +7,7 @@ _package() {
         install)
             DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends -o Dpkg::Options::="--force-confnew" $2
             ;;
-        uninstall)
+        purge)
             apt-get purge $2
             ;;
         upgrade)
