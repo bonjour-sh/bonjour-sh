@@ -14,10 +14,11 @@ _package() {
             pkg delete $2
             ;;
         upgrade)
-            pkg upgrade
+            pkg upgrade -y
             ;;
         autoremove)
             pkg autoremove
             ;;
     esac
 }
+

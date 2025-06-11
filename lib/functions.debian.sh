@@ -11,13 +11,13 @@ _package() {
             DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends -o Dpkg::Options::="--force-confnew" $2
             ;;
         purge)
-            apt-get purge $2
+            apt-get purge -y $2
             ;;
         upgrade)
-            apt-get upgrade
+            apt-get upgrade -y
             ;;
         autoremove)
-            apt-get autoremove
+            apt-get autoremove -y
             ;;
     esac
 }
