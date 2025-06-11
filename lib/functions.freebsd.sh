@@ -11,7 +11,7 @@ _package() {
             pkg install -y $2
             ;;
         purge)
-            pkg delete $2
+            pkg delete $2*
             ;;
         upgrade)
             pkg upgrade -y
