@@ -2,6 +2,15 @@
 #
 # Reusable functions
 
+# Dictionary function, resolves os-specific value for passed key
+_() (
+    if [ ! -f "${BONJOUR_DIR}/.${BONJOUR_OS}.env" ]; then
+        echo "Dictionary file .${BONJOUR_OS}.env not found in ${BONJOUR_DIR}" >&2
+    fi
+    . "${BONJOUR_DIR}/.${BONJOUR_OS}.env"
+    eval "echo \$$1"
+)
+
 _input() (
     _name=$1 # shorthand to the name of requested variable
     _prompt_text=$2 # shorthand to the prompt text
