@@ -2,6 +2,9 @@
 #
 # Debian-specific implementation for ./functions.sh
 
+LOCAL_ETC='/etc' # different on FreeBSD
+export LOCAL_ETC
+
 _package() {
     case $1 in
         install)
