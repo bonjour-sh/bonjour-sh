@@ -5,10 +5,10 @@
 _package() {
     case $1 in
         install)
-            pkg install -y $2
+            pkg install -y -f $2
             ;;
         purge)
-            pkg delete $2*
+            pkg delete -y -f $2*
             ;;
         upgrade)
             pkg upgrade -y
