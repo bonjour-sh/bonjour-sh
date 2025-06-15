@@ -15,7 +15,14 @@ _input() (
     _name=$1 # shorthand to the name of requested variable
     _prompt_text=$2 # shorthand to the prompt text
     _defaults=$3 # shorthand to the default value(s)
-    shift 3 # drop first three args so that we don't loop through them below
+    # Handle optional help text argument
+    if [ $# -ge 4 ]; then
+        _help=$4 # if 4th argument is present, use it as help text
+        shift 4 # drop first 4 args so that we don't loop through them below
+    else
+        _help='' # received less than 4 arguments, help text is empty
+        shift 3 # drop first 3 args so that we don't loop through them below
+    fi
     # Determine the prompt type: text input, boolean yes/no, multiple choice
     _type='text' # assume plain text by default
     if [ "$_defaults" = true ] || [ "$_defaults" = false ]; then
@@ -76,9 +83,19 @@ _input() (
         if [ ! -z "$_prompt_defaults" ]; then
             _prompt_defaults=" [$_prompt_defaults]"
         fi
+        # Indicate when help is available
+        if [ ! -z "$_help" ]; then
+            _prompt_defaults="${_prompt_defaults} / (?)"
+        fi
         # Finally, prompt
         printf "${_prompt_text}${_prompt_defaults}: " >&2
         read _value < /dev/tty
+    fi
+    # Output help text if user asked for it
+    if [ "_${_value}" = "_?" ] && [ ! -z "$_help" ]; then
+        printf "\n\n${_name}:\n${_help}\n"
+        _input "$_name" "$_prompt_text" "$_defaults" "$_help" "$@"
+        return 0 # prevent debugging nested _input calls
     fi
     $BONJOUR_DEBUG && printf "    _value '$_value'" >&2
     # Assume the defaults if $_value is still empty at this point
@@ -96,7 +113,7 @@ _input() (
     # Return the value
     echo "$_value"
     # Clean up
-    unset -v _name _prompt_text _defaults _type _value _prompt_defaults
+    unset -v _name _prompt_text _defaults _type _value _prompt_defaults _help
 )
 
 _get_public_ip() (
