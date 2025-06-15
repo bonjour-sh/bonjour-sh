@@ -28,7 +28,7 @@ _input() (
     if [ "$_defaults" = true ] || [ "$_defaults" = false ]; then
         _type='boolean' # update to boolean
     fi
-    # Check if $var is a space-separated list of words,
+    # Check if $_defaults is a space-separated list of words,
     # where each word consists only of lowercase letters and digits.
     if printf '%s\n' "$_defaults" | grep -q '^[a-z0-9._-]\{1,\}\( [a-z0-9._-]\{1,\}\)\{1,\}$'; then
         _type='select' # update to multiple choice
@@ -43,7 +43,7 @@ _input() (
 	EOF
     # EOF above must be indented with 1 tab character
     _value='' # default to empty
-    # Loop through (remaining) flags and arguments passed to the script
+    # Loop through (remaining) arguments and/or flags passed to the script
     for _arg in "$@"; do
         _key=$(echo $_arg | cut -f1 -d=) # parse --KEY out of --KEY=VALUE
         if [ "$_key" != "--$_name" ]; then # skip keys that don't match
