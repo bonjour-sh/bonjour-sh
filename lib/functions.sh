@@ -16,7 +16,7 @@ _input() (
     _prompt_text=$2 # shorthand to the prompt text
     _defaults=$3 # shorthand to the default value(s)
     # Handle optional help text argument
-    if [ $# -ge 4 ]; then
+    if [ $# -ge 5 ]; then
         _help=$4 # if 4th argument is present, use it as help text
         shift 4 # drop first 4 args so that we don't loop through them below
     else
