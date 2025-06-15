@@ -23,7 +23,7 @@ for _installer_dir in "$_installer_path"/*; do
     unset -v _installer_dir _installer_name
 done
 
-_install_command() {
+_install_command() (
     _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" "$@")
     # 0. Load all selected installers
     for _installer_name in $_installers; do
@@ -78,4 +78,4 @@ _install_command() {
         fi
         "_${_installer_name}_install" "$@"
     done
-}
+)
