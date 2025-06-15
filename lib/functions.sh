@@ -93,7 +93,7 @@ _input() (
     fi
     # Output help text if user asked for it
     if [ "_${_value}" = "_?" ] && [ ! -z "$_help" ]; then
-        printf "\n\n${_name}:\n${_help}\n"
+        printf "\n\n${_name}:\n${_help}\n" >&2
         _input "$_name" "$_prompt_text" "$_defaults" "$_help" "$@"
         return 0 # prevent debugging nested _input calls
     fi
