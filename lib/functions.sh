@@ -133,3 +133,52 @@ _get_public_ip() (
     echo 'Error: curl, fetch, or wget not found.' >&2
     exit 1
 )
+
+_config() (
+    _f=$1 # file path
+    _c=$2 # comment character, e.g. `#` or `;`
+    _a=$3 # assignment character, e.g. `=` or ` `
+    _k=$4 # key to set
+    _v=$5 # value to set; if not present, the key will be commented out
+    # 3 arguments: keys and values are passed as heredoc; parse stdin
+    if [ $# -eq 3 ]; then
+        while IFS= read -r _l; do
+            # Remove trailing inline comments
+            _l=$(printf '%s\n' "$_l" | sed "s/[[:space:]]\{1,\}${_c}.*$//")
+            # Skip blank lines
+            [ -z "$_l" ] && continue
+            # If line starts with comment character, comment the key out
+            if printf '%s\n' "$_l" | grep -q "^${_c}"; then
+                _k=$(printf '%s\n' "$_l" | sed "s/^${_c}[[:space:]]*//")
+                _config "$_f" "$_c" "$_a" "$_k"
+                continue
+            fi
+            # The line contains `KEY VAL`: call self recursively, set KEY to VAL
+            set -- $_l
+            _k=$1
+            shift
+            _v=$*
+            _config "$_f" "$_c" "$_a" "$_k" "$_v"
+        done
+        return
+    fi
+    # 4+ arguments: keys (and optional values) passed in individual calls
+    _match="^[[:space:]]*${_c}*[[:space:]]*${_k}\\([[:space:]]*[^[:space:]]*\\)"
+    if [ $# -eq 4 ]; then
+        # Value not present; commenting out the key
+        _replace="${_c}${_k}\1"
+    else
+        # Setting key to value
+        _replace="${_k}${_a}${_v}"
+        # If there is a value to set, make sure the key exists in the file
+        if ! grep -q "$_match" "$_f"; then
+            printf "\n${_k}\n" >> "$_f" # sed below will set actual value
+        fi
+    fi
+    if sed --version 2>/dev/null | grep -q '^GNU'; then
+        _sed="sed -i"
+    else
+        _sed="sed -i ''"
+    fi
+    ${_sed} "s|${_match}|${_replace}|" "$_f"
+)
