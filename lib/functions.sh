@@ -140,6 +140,10 @@ _config() (
     _a=$3 # assignment character, e.g. `=` or ` `
     _k=$4 # key to set
     _v=$5 # value to set; if not present, the key will be commented out
+    # Create the file if it doesn't exist
+    if [ ! -f "$_f" ]; then
+        : > "$_f"
+    fi
     # 3 arguments: keys and values are passed as heredoc; parse stdin
     if [ $# -eq 3 ]; then
         while IFS= read -r _l; do
