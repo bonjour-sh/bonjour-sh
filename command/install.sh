@@ -25,7 +25,7 @@ done
 
 _install_command() (
     _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" "$@")
-    # 0. Load all selected installers and their default configurations (if any)
+    # 0.1. Load all selected installers and their default configurations (if any)
     for _installer_name in $_installers; do
         # Source both general and OS-specific scripts for this installer
         if [ -f "${_installer_path}/${_installer_name}/${_installer_name}.${BONJOUR_OS}.sh" ]; then
@@ -40,6 +40,10 @@ _install_command() (
             . "$_installer_env"
         fi
     done
+    # 0.2. Load system's .bonjour.env to overwrite installer defaults
+    if [ -f "${HOME}/.bonjour.env" ]; then
+        . "${HOME}/.bonjour.env"
+    fi
     # 1. (Interactive) Collect input required for selected installers
     for _installer_name in $_installers; do
         # Shorthand to what would be current installer's .env path
@@ -77,6 +81,8 @@ _install_command() (
                         fi
                         # Overwrite environment variable with value we collected
                         eval "${_env_key}=\${_env_value}"
+                        # Save the answer for future (re)use and reference
+                        _config "${HOME}/.bonjour.env" '#' '=' "$_env_key" "'$_env_value'"
                         # Clean up
                         unset -v _env_key _env_default _func _env_value
                         _env_help='' # Reset back to empty
