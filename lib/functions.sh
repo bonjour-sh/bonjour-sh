@@ -176,7 +176,7 @@ _config() (
         _replace="${_k}${_a}${_v}"
         # If there is a value to set, make sure the key exists in the file
         if ! grep -q "$_match" "$_f"; then
-            printf "\n${_k}\n" >> "$_f" # sed below will set actual value
+            printf "${_k}\n" >> "$_f" # sed below will set actual value
         fi
     fi
     if sed --version 2>/dev/null | grep -q '^GNU'; then
