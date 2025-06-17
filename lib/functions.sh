@@ -180,9 +180,8 @@ _config() (
         fi
     fi
     if sed --version 2>/dev/null | grep -q '^GNU'; then
-        _sed="sed -i"
+        sed -i "s|${_match}|${_replace}|" "$_f"
     else
-        _sed="sed -i ''"
+        sed -i '' "s|${_match}|${_replace}|" "$_f"
     fi
-    ${_sed} "s|${_match}|${_replace}|" "$_f"
 )
