@@ -166,7 +166,7 @@ _config() (
         return
     fi
     # 4+ arguments: keys (and optional values) passed in individual calls
-    _match="^[[:space:]]*${_c}*[[:space:]]*${_k}\\([[:space:]]*[^[:space:]]*\\)"
+    _match="^[[:space:]]*${_c}*[[:space:]]*${_k}\\(.*\\)$"
     if [ $# -eq 4 ]; then
         # Value not present; commenting out the key
         _replace="${_c}${_k}\1"
