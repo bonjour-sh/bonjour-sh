@@ -24,7 +24,7 @@ for _installer_dir in "$_installer_path"/*; do
 done
 
 _install_command() (
-    _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" "$@")
+    _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" '' "$@")
     # 0.1. Load all selected installers and their default configurations (if any)
     for _installer_name in $_installers; do
         # Source both general and OS-specific scripts for this installer

@@ -15,14 +15,8 @@ _input() (
     _name=$1 # shorthand to the name of requested variable
     _prompt_text=$2 # shorthand to the prompt text
     _defaults=$3 # shorthand to the default value(s)
-    # Handle optional help text argument
-    if [ $# -ge 5 ]; then
-        _help=$4 # if 4th argument is present, use it as help text
-        shift 4 # drop first 4 args so that we don't loop through them below
-    else
-        _help='' # received less than 4 arguments, help text is empty
-        shift 3 # drop first 3 args so that we don't loop through them below
-    fi
+    _help=$4 # shorthand to help text; pass empty '' if not needed
+    shift 4 # drop first 4 args so that we don't loop through them below
     # Determine the prompt type: text input, boolean yes/no, multiple choice
     _type='text' # assume plain text by default
     if [ "$_defaults" = true ] || [ "$_defaults" = false ]; then

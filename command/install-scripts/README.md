@@ -38,7 +38,7 @@ _example_prompt_ip() (
     # You can call an external program to get your public IP here if needed.
     _default_ip="0.0.0.0"
     # Prompt
-    _provided_ip=$(_input 'ip' 'Please enter an IP address' "$_default_ip" "$@")
+    _provided_ip=$(_input 'ip' 'IP address' "$_default_ip" 'Please enter an IPv4 address' "$@")
     # Here you can test the value you received
     ping -c 1 "${_provided_ip}">/dev/null 2>&1
     if [ "$?" -gt "0" ]; then
