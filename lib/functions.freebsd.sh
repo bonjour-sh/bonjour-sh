@@ -14,7 +14,7 @@ _package() {
             pkg upgrade -y
             ;;
         autoremove)
-            pkg autoremove
+            pkg autoremove -y
             ;;
     esac
 }
