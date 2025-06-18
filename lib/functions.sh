@@ -71,7 +71,7 @@ _input() (
         unset -v _arg _key
     done
     # If value was not found in arguments, and prompt is configured, do prompt
-    if [ -n "$_prompt_text" ] && [ -z "$_value" ]; then
+    if [ "$BONJOUR_NONINTERACTIVE" != "true" ] && [ -n "$_prompt_text" ] && [ -z "$_value" ]; then
         # Format defaults displayed after prompt text
         if [ 'boolean' = $_type ]; then # if expecting boolean, format as Y/N
             _prompt_defaults=$("$_defaults" && echo "Y/n" || echo "y/N")

@@ -8,6 +8,7 @@ if [ "$(whoami)" != 'root' ]; then
 fi
 
 BONJOUR_DEBUG="${BONJOUR_DEBUG:-false}"
+BONJOUR_NONINTERACTIVE="${BONJOUR_NONINTERACTIVE:-false}"
 BONJOUR_DIR=$(dirname $(realpath $0))
 BONJOUR_OS=$(
     [ "$(uname -s)" = FreeBSD ] && echo freebsd || (
