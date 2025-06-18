@@ -166,6 +166,9 @@ _system_install() {
     # Generate all missing SSH host keys (RSA, ECDSA, ED25519, etc.)
     # Used to ensure proper SSH host identity on first boot or after system provisioning.
     ssh-keygen -A
+}
+
+_system_post_install() {
     # Clean up
     _package autoremove
 }
