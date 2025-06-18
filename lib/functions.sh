@@ -44,7 +44,11 @@ _input() (
         if [ "$_key" != "--$_name" ]; then # skip keys that don't match
             continue
         fi
-        _value="${_arg#*=}" # parse VALUE out of --KEY=VALUE
+        if [ "$_arg" = "--$_name" ]; then # if we only received --KEY
+            _value="$_defaults" # we're explicitly told to use default value
+        else
+            _value="${_arg#*=}" # parse VALUE out of --KEY=VALUE
+        fi
         $BONJOUR_DEBUG && cat >&2 <<-EOF
 		    ----
 		    $@
