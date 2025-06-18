@@ -39,6 +39,7 @@ _input() (
 	    _name        $_name
 	    _prompt_text $_prompt_text
 	    _defaults    $_defaults
+	    _help        $_help
 	    _type        $_type
 	EOF
     # EOF above must be indented with 1 tab character
