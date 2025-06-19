@@ -2,6 +2,11 @@
 #
 # Base system installer
 
+# Dynamic values to be defaults in installer prompts; name as .env key+'_default'
+
+# All IPs connected to the system, de-duplicated, space-separated
+whitelisted_hosts_default=$(who | awk '{print $NF}' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -u | tr '\n' ' ')
+
 # Hijack certain prompts
 _system_prompt_server_ip() (
     _detected_ip=$(_get_public_ip)

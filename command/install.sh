@@ -70,6 +70,8 @@ _install_command() (
                         fi
                         # Read value from environment to suggest default answer
                         eval "_env_default=\${$_env_key}"
+                        # If still empty see if default was defined for this key
+                        [ -z "$_env_default" ] && eval "_env_default=\${${_env_key}_default}"
                         # Collect value from callback (if any), else call _input
                         _func="_${_installer_name}_prompt_${_env_key}"
                         if type "$_func" 2>/dev/null | grep -q 'function'; then
