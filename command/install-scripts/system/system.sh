@@ -69,6 +69,15 @@ _system_pre_install_freebsd() (
     _at_boot enable pf true
     # Individual configs for specific services will go here
     mkdir -p /etc/pf
+    # Configure pf for fail2ban
+    _insert_once 'include "/etc/pf/f2b.conf"' '/etc/pf.conf'
+    cat > '/etc/pf/f2b.conf' <<-EOF
+	anchor "f2b/*"
+	table <f2b> persist
+	block in quick from <f2b> to any
+	EOF
+    # EOF above must be indented with 1 tab character
+    pfctl -f /etc/pf.conf
 )
 
 _system_pre_install() {
@@ -88,6 +97,7 @@ _system_install_debian() {
     _package install net-tools # provides netstat
     _package install netcat # provides nc
     _package install python3-gi # fix "Unable to monitor PrepareForShutdown() signal"
+    _package install python3-systemd # fix fail2ban "Backend 'systemd' failed to initialize due to No module named 'systemd'"
 }
 
 _system_install() {
@@ -113,6 +123,7 @@ _system_install() {
     _package install whois
     _package install git
     _package install unzip
+    _package install $(_ package_fail2ban)
     # Tools used to run backups
     _package install rsync
     _package install rsnapshot
@@ -170,9 +181,39 @@ _system_install() {
     # Generate all missing SSH host keys (RSA, ECDSA, ED25519, etc.)
     # Used to ensure proper SSH host identity on first boot or after system provisioning.
     ssh-keygen -A
+    # Default fail2ban configuration for local jails
+    cat > "$(_ local_etc)/fail2ban/jail.local" <<-EOF
+	[DEFAULT]
+	findtime = 1w
+	bantime = 1w
+	banaction = $(_ fail2ban_banaction)
+	banaction_allports = $(_ fail2ban_banaction)
+	action = %(action_)s
+	ignoreip = ${whitelisted_hosts}
+	EOF
+    # EOF above must be indented with 1 tab character
+    # SSH jail: ban IPs with $maxretry failed logins within $findtime window
+    cat > "$(_ local_etc)/fail2ban/jail.d/sshd.local" <<-EOF
+	[sshd]
+	enabled = true
+	mode = aggressive
+	port = ${ssh_port}
+	filter = sshd
+	maxretry = 2
+	logpath = %(sshd_log)s
+	backend = %(sshd_backend)s
+	EOF
+    # EOF above must be indented with 1 tab character
+    _at_boot enable fail2ban true
+}
+
+_system_post_install_debian() {
+    # Configure fail2ban on systemd - superuser.com/a/1838559
+    [ ! -f /var/log/auth.log ] && _insert_once 'sshd_backend = systemd' /etc/fail2ban/paths-debian.conf
 }
 
 _system_post_install() {
+    service fail2ban restart
     # Clean up
     _package autoremove
 }
