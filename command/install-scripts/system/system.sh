@@ -117,14 +117,10 @@ _system_install() {
     _package install rsync
     _package install rsnapshot
     # Ensure .ssh folder with authorized_keys exists
-    if [ ! -d "${HOME}/.ssh" ]; then
-        mkdir -p "${HOME}/.ssh"
-        chmod 700 "${HOME}/.ssh"
-    fi
-    if [ ! -f "${HOME}/.ssh/authorized_keys" ]; then
-        touch "${HOME}/.ssh/authorized_keys"
-        chmod 600 "${HOME}/.ssh/authorized_keys"
-    fi
+    mkdir -p "${HOME}/.ssh"
+    chmod 700 "${HOME}/.ssh"
+    touch "${HOME}/.ssh/authorized_keys"
+    chmod 600 "${HOME}/.ssh/authorized_keys"
     # Create root SSH key if needed
     if [ ! -f "${HOME}/.ssh/id_rsa" ]; then
         ssh-keygen -b 8192 -t rsa -q -f "${HOME}/.ssh/id_rsa" -N "" -C "$(whoami)@${server_ip}"
@@ -154,14 +150,10 @@ _system_install() {
         # Create $ssh_user inside superuser group
         $(_ useradd) "$ssh_user" -s /bin/sh -md "$_dir_home" -g "$(_ sudo_group)"
         # Ensure .ssh folder with authorized_keys exists
-        if [ ! -d "${_dir_home}/.ssh" ]; then
-            mkdir -p "${_dir_home}/.ssh"
-            chmod 700 "${_dir_home}/.ssh"
-        fi
-        if [ ! -f "${_dir_home}/.ssh/authorized_keys" ]; then
-            touch "${_dir_home}/.ssh/authorized_keys"
-            chmod 600 "${_dir_home}/.ssh/authorized_keys"
-        fi
+        mkdir -p "${_dir_home}/.ssh"
+        chmod 700 "${_dir_home}/.ssh"
+        touch "${_dir_home}/.ssh/authorized_keys"
+        chmod 600 "${_dir_home}/.ssh/authorized_keys"
         # Create SSH keys for $ssh_user
         if [ ! -f "${_dir_home}/.ssh/id_rsa" ]; then
             ssh-keygen -b 8192 -t rsa -q -f "${_dir_home}/.ssh/id_rsa" -N "" -C "${ssh_user}@${server_ip}"
