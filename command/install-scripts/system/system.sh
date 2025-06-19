@@ -174,9 +174,7 @@ _system_install() {
         _dir_home="$HOME"
     fi
     # Append public key only if not present yet
-    if ! grep -qxF "$ssh_pubkey" "${_dir_home}/.ssh/authorized_keys"; then
-        printf '%s\n' "$ssh_pubkey" >> "${_dir_home}/.ssh/authorized_keys"
-    fi
+    _insert_once "$ssh_pubkey" "${_dir_home}/.ssh/authorized_keys"
     # Generate all missing SSH host keys (RSA, ECDSA, ED25519, etc.)
     # Used to ensure proper SSH host identity on first boot or after system provisioning.
     ssh-keygen -A

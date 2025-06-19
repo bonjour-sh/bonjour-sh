@@ -133,6 +133,16 @@ _get_public_ip() (
     exit 1
 )
 
+# _insert_once - insert line into file, checking if it exists before inserting
+# Usage: _insert_once LINE FILE
+# Arguments:
+#   $1 - LINE: full line without trailing \n
+#   $2 - FILE: path to file where LINE should be present
+_insert_once() {
+    # Check if the line already exists in the file; if not, append it
+    grep -qxF "$1" "$2" || echo "$1" >> "$2"
+}
+
 _config() (
     _f=$1 # file path
     _c=$2 # comment character, e.g. `#` or `;`
