@@ -54,6 +54,16 @@ _system_pre_install_debian() {
 _system_pre_install_freebsd() (
     _at_boot enable ntpd true
     sysrc ntpd_sync_on_start=YES
+    # Create basic pf config allowing all traffic (matching Debian's default)
+    cat > /etc/pf.conf <<-EOF
+	set skip on lo
+	pass in all
+	pass out all
+	EOF
+    # EOF above must be indented with 1 tab character
+    _at_boot enable pf true
+    # Individual configs for specific services will go here
+    mkdir -p /etc/pf
 )
 
 _system_pre_install() {
