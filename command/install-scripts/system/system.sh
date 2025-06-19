@@ -52,9 +52,8 @@ _system_pre_install_debian() {
 }
 
 _system_pre_install_freebsd() (
-    sysrc ntpd_enable=YES
+    _at_boot enable ntpd true
     sysrc ntpd_sync_on_start=YES
-    service ntpd start
 )
 
 _system_pre_install() {
