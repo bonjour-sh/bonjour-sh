@@ -87,6 +87,7 @@ _system_pre_install() {
 }
 
 _system_install_debian() {
+    _package purge man-db # speed up apt-get on machines with slow I/O
     _package install build-essential
     _package install apt-utils
     _package install make
