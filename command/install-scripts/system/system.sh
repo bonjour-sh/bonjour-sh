@@ -54,6 +54,39 @@ _system_pre_install_debian() {
     for k in $(apt-get update 2>&1|grep -o NO_PUBKEY.*|sed 's/NO_PUBKEY //g');do echo "key: $k";gpg --recv-keys $k;gpg --recv-keys $k;gpg --armor --export $k|apt-key add -;done
     _package install debian-archive-keyring
     apt-get update
+    # Restore iptables rules on boot
+    mkdir -p /etc/iptables-bonjour
+    echo "iptables rules restored by /etc/network/if-up.d/iptables-bonjour" > /etc/iptables-bonjour/README
+    cat > /etc/network/if-up.d/iptables-bonjour <<-'EOF'
+	#!/bin/sh
+	[ -f "/run/iptables-bonjour.lock" ] && exit 0
+	touch "/run/iptables-bonjour.lock"
+	chmod +x /etc/iptables-bonjour/*.sh
+	for file in /etc/iptables-bonjour/*.sh; do
+	    [ -f "$file" ] || continue # catch literal '/etc/iptables-bonjour/*.sh'
+	    sh "$file"
+	done
+	EOF
+    # EOF above must be indented with 1 tab character
+    chmod +x /etc/network/if-up.d/iptables-bonjour
+    # For systems where ifup is not present
+    if ! command -v ifup >/dev/null 2>&1 && [ "$(ps -p 1 -o comm=)" = "systemd" ]; then
+        cat > /etc/systemd/system/iptables-bonjour.service <<-EOF
+		[Unit]
+		Description=Restore iptables rules on network up
+		After=network-online.target
+		Wants=network-online.target
+		[Service]
+		Type=oneshot
+		ExecStart=/etc/network/if-up.d/iptables-bonjour
+		[Install]
+		WantedBy=multi-user.target
+		EOF
+        # EOF above must be indented with 2 tab characters
+        systemctl daemon-reload
+        systemctl enable iptables-bonjour.service
+    fi
+
 }
 
 _system_pre_install_freebsd() (
@@ -152,6 +185,16 @@ _system_install() {
 	HostKeyAlgorithms ssh-ed25519,rsa-sha2-256,rsa-sha2-512,ssh-rsa-cert-v01@openssh.com
 	EOF
     # EOF above must be indented with 1 tab character
+    # Restrict SSH to whitelisted hosts
+    if [ -n "$whitelisted_hosts" ]; then
+        _firewall 'ssh-restrict' flush
+        for _whitelisted_host in "$whitelisted_hosts"; do
+            _firewall 'ssh-restrict' allow "$_whitelisted_host" in ":${ssh_port}"
+            _firewall 'ssh-restrict' allow ":${ssh_port}" out "$_whitelisted_host"
+        done
+        _firewall 'ssh-restrict' deny '' in ":${ssh_port}"
+        _firewall 'ssh-restrict' deny ":${ssh_port}" out ''
+    fi
     if [ -n "$ssh_user" ]; then
         _config '/etc/ssh/sshd_config' '#' ' ' <<-EOF
 		PermitRootLogin no     # Disable root login
