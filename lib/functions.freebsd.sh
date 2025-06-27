@@ -35,3 +35,60 @@ _at_boot() (
         service "$2" $( [ "_$1" = "_enable" ] && echo start || echo stop )
     fi
 )
+
+# _firewall - OS-agnostic wrapper to manage firewall
+# Usage: _firewall RULE-NAME STATE SRC DIRECTION DST
+# Arguments:
+#   $1 - RULE-NAME: name for rule(set), used in filename for persisting
+#   $2 - STATE: allow|deny|flush
+#   $3 - SRC: see DST below
+#   $4 - DIRECTION: in|out
+#   $5 - DST: IP[/MASK][:PORT], e.g. 1.2.3.4, 1.2.3.4:56, 1.2.3.4/24:56 etc.
+_firewall() (
+    _file="/etc/pf/bonjour-${1}.conf"
+    # Determine action
+    case $2 in
+        allow)
+            _action='pass'
+            ;;
+        deny)
+            _action='block'
+            ;;
+        flush)
+            : > "$_file"
+            return
+    esac
+    # Parse IP[/MASK] and PORT out of SRC and DST
+    IFS=':' read -r _src_host _src_port <<-EOF
+	$3
+	EOF
+    IFS=':' read -r _dst_host _dst_port <<-EOF
+	$5
+	EOF
+    # EOFs above must be indented with 1 tab character
+    # Build src line
+    [ -n "$_src_host" ] || _src_host='any'
+    [ -n "$_dst_host" ] || _dst_host='any'
+    if [ -n "$_src_port" ]; then
+        _src_port="port ${_src_port}"
+    fi
+    if [ -n "$_dst_port" ]; then
+        _dst_port="port ${_dst_port}"
+    fi
+    $BONJOUR_DEBUG && cat >&2 <<-EOF
+	    @          $@
+	    file       $_file
+	    action     $_action
+	    direction  $4
+	    src
+	        host   $_src_host
+	        port   $_src_port
+	    dst
+	        host   $_dst_host
+	        port   $_dst_port
+	EOF
+    # EOF above must be indented with 1 tab character
+    _rule="${_action} ${4} on egress proto tcp from ${_src_host} ${_src_port} to ${_dst_host} ${_dst_port}"
+    _insert_once "$_rule" "$_file"
+    _insert_once "include \"$_file\"" "/etc/pf.conf"
+)
