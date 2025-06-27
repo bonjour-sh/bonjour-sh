@@ -139,6 +139,8 @@ _get_public_ip() (
 #   $1 - LINE: full line without trailing \n
 #   $2 - FILE: path to file where LINE should be present
 _insert_once() {
+    # Make sure the file exists
+    [ -f "$2" ] || touch "$2"
     # Check if the line already exists in the file; if not, append it
     grep -qxF "$1" "$2" || echo "$1" >> "$2"
 }
