@@ -5,7 +5,40 @@
 _package() {
     case $1 in
         install)
-            pkg install -y -f $2
+            # FreeBSD package names can be less straightforward compared to Debian:
+            #
+            # Debian         | FreeBSD
+            # -----------------------------------
+            # idn            | libidn
+            # fail2ban       | py311-fail2ban
+            # mariadb-server | mariadb1011-server
+            #
+            # This piece guesses a FreeBSD candidate based on a Debian package name
+            _pkg_name=$(pkg rquery -g '%n' "*$(echo "$2" | sed 's/-/*-/g')" | awk -v name="$2" '
+                {
+                    # first prefer exact matches ("nginx" = "nginx")
+                    if ($0 == name) {
+                        exact = $0
+                    # accept the library version ("idn" = "libidn")
+                    } else if ($0 == ("lib"name)) {
+                        matched = $0
+                    # accept package that ends with -name ("certbot" = "py311-certbot")
+                    } else if ($0 ~ ("-"name"$")) {
+                        suffix = $0
+                    }
+                    # fallback to first candidate
+                    if (NR == 1) {
+                        fallback = $0
+                    }
+                }
+                END {
+                    if (exact) {print exact; exit}
+                    if (matched) {print matched; exit}
+                    if (suffix) {print suffix; exit}
+                    print fallback
+                }
+            ')
+            pkg install -y -f $_pkg_name
             ;;
         purge)
             pkg delete -y -f $2*
