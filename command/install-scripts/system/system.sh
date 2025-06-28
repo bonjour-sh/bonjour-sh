@@ -157,7 +157,7 @@ _system_install() {
     _package install whois
     _package install git
     _package install unzip
-    _package install $(_ package_fail2ban)
+    _package install fail2ban
     # Tools used to run backups
     _package install rsync
     _package install rsnapshot
