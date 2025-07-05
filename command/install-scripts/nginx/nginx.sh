@@ -59,15 +59,15 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     # Default server
-    cat > "${_local_etc}/nginx/conf.d/server-_.conf" <<-EOF
+    cat > "${_local_etc}/nginx/conf.d/default_server.conf" <<-EOF
 	server {
 	    server_name _;
 	    listen 80 default_server;
 	    listen 443 ssl default_server;
 	    access_log /var/log/nginx/_.access.log;
 	    error_log /var/log/nginx/_.error.log;
-	    ssl_certificate ${_local_etc}/nginx/_.crt;
-	    ssl_certificate_key ${_local_etc}/nginx/_.key;
+	    ssl_certificate ${_local_etc}/nginx/default_server.crt;
+	    ssl_certificate_key ${_local_etc}/nginx/default_server.key;
 	    location / {
 	        return 444;
 	    }
@@ -75,7 +75,10 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     # Ensure HTTPs support for default server
-    openssl req -x509 -nodes -days 36524 -newkey rsa:4096 -keyout "${_local_etc}/nginx/_.key" -out "${_local_etc}/nginx/_.crt" -subj "/C=FR/ST=/L=Paris/O=/CN=*"
+    openssl req -x509 -nodes -days 36524 -newkey rsa:4096 \
+        -keyout "${_local_etc}/nginx/default_server.key" \
+        -out "${_local_etc}/nginx/default_server.crt" \
+        -subj "/C=FR/ST=/L=Paris/O=/CN=*"
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
     chown -R "${ssh_user}:${_www_group}" "$_www_root"
