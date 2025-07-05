@@ -17,7 +17,7 @@ _nginx_pre_install_debian() {
 _nginx_pre_install() {
     [ -d "${_local_etc}/nginx/sites-available" ] && rm -rf "${_local_etc}/nginx/sites-available"
     [ -d "${_local_etc}/nginx/sites-enabled" ] && rm -rf "${_local_etc}/nginx/sites-enabled"
-    [ -f "${_local_etc}/nginx/conf.d/default.conf" ] && rm "${_local_etc}/nginx/conf.d/default.conf"
+    [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
 }
 
 _nginx_install() (
