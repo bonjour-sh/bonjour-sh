@@ -84,6 +84,7 @@ _nginx_install() (
         -subj "/C=FR/ST=/L=Paris/O=/CN=*"
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
+    chown -R "${_www_user}:${_www_group}" "/var/log/nginx"
     chown -R "${ssh_user}:${_www_group}" "$_www_root"
     chmod g+s "$_www_root"
     # Enable and start
