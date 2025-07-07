@@ -196,3 +196,23 @@ _config() (
         sed -i '' "s|${_match}|${_replace}|" "$_f"
     fi
 )
+
+_certbot_certonly() (
+    _non_interactive=; [ "$BONJOUR_NONINTERACTIVE" = 'true' ] && _non_interactive='--non-interactive'
+    _port='80'; timeout 2 nc -z 127.0.0.1 80 2>/dev/null && _port='8008'
+    _domain='' # placeholder for the main domain name
+    _csv='' # comma-separated list of all domains (main + aliases)
+    for _d in $1; do
+        [ -z "$_domain" ] && _domain="$_d" # first domain is main domain
+        [ -n "$_csv" ] && _csv="${_csv},"
+        _csv="${_csv}${_d}"
+    done
+    set -x
+    certbot certonly $_non_interactive --agree-tos \
+        --standalone --http-01-port "$_port" \
+        --email "webmaster@${_domain}" \
+        --domains "$_csv"
+    _result=$?
+    set +x
+    exit $_result
+)
