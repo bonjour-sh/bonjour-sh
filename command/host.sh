@@ -29,5 +29,19 @@ _host_command_add() {
 	}
 	EOF
     service nginx restart
+    _certbot_certonly "${_domain} ${_aliases}"
+    if [ $? -ne 0 ]; then
+        echo "Certbot failed. Aborting."
+        return 1
+    fi
+    cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
+	server {
+	    server_name ${_domain} ${_aliases};
+	    listen 443 ssl;
+	    include snippets/vhost.conf;
+	    include snippets/vhost_ssl.conf;
+	}
+	EOF
+    service nginx restart
 }
 

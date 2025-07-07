@@ -23,6 +23,7 @@ _nginx_pre_install() {
 
 _nginx_install() (
     _package install nginx
+    _package install certbot
     # Whole files included in main nginx.conf as conf.d/*.conf
     mkdir -p "${_local_etc}/nginx/conf.d"
     # Reusable parts to be included in individual configs
@@ -74,6 +75,7 @@ _nginx_install() (
 	        error_log /var/log/nginx/default_server.error.log;
 	        return 444;
 	    }
+	    include snippets/certbot_standalone.conf;
 	}
 	EOF
     # EOF above must be indented with 1 tab character
@@ -82,6 +84,19 @@ _nginx_install() (
         -keyout "${_local_etc}/nginx/default_server.key" \
         -out "${_local_etc}/nginx/default_server.crt" \
         -subj "/C=FR/ST=/L=Paris/O=/CN=*"
+    # Generate the Diffie-Hellman parameters
+    openssl dhparam -out "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam_numbits"
+    # Reusable piece
+    cat > "${_local_etc}/nginx/snippets/certbot_standalone.conf" <<-'EOF'
+	location ^~ /.well-known/acme-challenge/ {
+	    auth_basic off;
+	    allow all;
+	    access_log /var/log/nginx/certbot.access.log;
+	    error_log /var/log/nginx/certbot.error.log;
+	    proxy_pass http://localhost:8008/.well-known/acme-challenge/;
+	}
+	EOF
+    # EOF above must be indented with 1 tab character
     cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-'EOF'
 	if (-d /var/www/$server_name) {
 	    include /var/www/$server_name/nginx*.conf;
@@ -94,7 +109,23 @@ _nginx_install() (
 	    access_log /var/log/nginx/vhost-$server_name.access.log;
 	    error_log off;
 	}
+	include snippets/certbot_standalone.conf;
 	EOF
+    # EOF above must be indented with 1 tab character
+    cat > "${_local_etc}/nginx/snippets/vhost_ssl.conf" <<-EOF
+	ssl_certificate ${_local_etc}/letsencrypt/live/\$server_name/fullchain.pem;
+	ssl_certificate_key ${_local_etc}/letsencrypt/live/\$server_name/privkey.pem;
+	ssl_dhparam ${_local_etc}/nginx/dhparam.pem;
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+	ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
+	ssl_session_timeout 1d;
+	ssl_session_cache shared:SSL:50m;
+	ssl_stapling on;
+	ssl_stapling_verify on;
+	add_header Strict-Transport-Security max-age=15768000;
+	EOF
+    # EOF above must be indented with 1 tab character
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
     chown -R "${_www_user}:${_www_group}" "/var/log/nginx"
