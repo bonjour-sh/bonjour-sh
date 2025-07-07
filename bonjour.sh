@@ -41,5 +41,12 @@ if [ -f "${BONJOUR_DIR}/command/${_command_name}.${BONJOUR_OS}.sh" ]; then
     . "${BONJOUR_DIR}/command/${_command_name}.${BONJOUR_OS}.sh"
 fi
 . "${BONJOUR_DIR}/command/${_command_name}.sh"
-
-"_${_command_name}_command" "$@"
+# See if a specific subcommand was requested
+if [ -n "$1" ] && [ "_$1" = "_$(printf "%s" "$1" | tr -dc '[:alnum:]')" ]; then
+    _subcommand_name="$1"
+    # First argument is subcommand name. Don't pass it to subcommand function.
+    shift 1
+    "_${_command_name}_command_${_subcommand_name}" "$@"
+else
+    "_${_command_name}_command" "$@"
+fi
