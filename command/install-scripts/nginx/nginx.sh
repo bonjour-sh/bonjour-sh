@@ -18,12 +18,15 @@ _nginx_pre_install() {
     [ -d "${_local_etc}/nginx/sites-available" ] && rm -rf "${_local_etc}/nginx/sites-available"
     [ -d "${_local_etc}/nginx/sites-enabled" ] && rm -rf "${_local_etc}/nginx/sites-enabled"
     [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
+    [ -d "${_local_etc}/nginx/snippets" ] && rm -rf "${_local_etc}/nginx/snippets"
 }
 
 _nginx_install() (
     _package install nginx
     # Whole files included in main nginx.conf as conf.d/*.conf
     mkdir -p "${_local_etc}/nginx/conf.d"
+    # Reusable parts to be included in individual configs
+    mkdir -p "${_local_etc}/nginx/snippets"
     # Create WWW root
     mkdir -p "$_www_root"
     # Main
