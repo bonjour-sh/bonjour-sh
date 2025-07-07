@@ -105,6 +105,22 @@ _nginx_install() (
 	    if (!-d /var/www/$server_name/public) {
 	        return 404;
 	    }
+	    # Ensure redirect to 1. primary domain and 2. HTTPs if available
+	    set $flag_https_s ""; # default to no HTTPs
+	    if (-f /usr/local/etc/letsencrypt/live/$server_name/fullchain.pem) {
+	        set $flag_https_s "s"; # plan redirect if cert exists
+	    }
+	    if ($scheme = https) {
+	        set $flag_https_s ""; # remove flag if we're already on HTTPs
+	    }
+	    set $flag_https_sn "$server_name"; # default to primary domain
+	    if ($host = $server_name) {
+	        set $flag_https_sn ""; # remove flag if already on primary domain
+	    }
+	    set $flag_https "${flag_https_s}${flag_https_sn}"; # can't concat in if
+	    if ($flag_https != "") { # redirect if at least one flag is not empty
+	        return 301 "http${flag_https_s}://${server_name}${request_uri}";
+	    }
 	    root /var/www/$server_name/public;
 	    access_log /var/log/nginx/vhost-$server_name.access.log;
 	    error_log off;
