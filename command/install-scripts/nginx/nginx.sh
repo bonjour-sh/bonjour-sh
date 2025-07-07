@@ -67,11 +67,11 @@ _nginx_install() (
 	    server_name _;
 	    listen 80 default_server;
 	    listen 443 ssl default_server;
-	    access_log /var/log/nginx/_.access.log;
-	    error_log /var/log/nginx/_.error.log;
 	    ssl_certificate ${_local_etc}/nginx/default_server.crt;
 	    ssl_certificate_key ${_local_etc}/nginx/default_server.key;
 	    location / {
+	        access_log /var/log/nginx/default_server.access.log;
+	        error_log /var/log/nginx/default_server.error.log;
 	        return 444;
 	    }
 	}
