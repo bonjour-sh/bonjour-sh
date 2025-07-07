@@ -82,6 +82,19 @@ _nginx_install() (
         -keyout "${_local_etc}/nginx/default_server.key" \
         -out "${_local_etc}/nginx/default_server.crt" \
         -subj "/C=FR/ST=/L=Paris/O=/CN=*"
+    cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-'EOF'
+	if (-d /var/www/$server_name) {
+	    include /var/www/$server_name/nginx*.conf;
+	}
+	location / {
+	    if (!-d /var/www/$server_name/public) {
+	        return 404;
+	    }
+	    root /var/www/$server_name/public;
+	    access_log /var/log/nginx/vhost-$server_name.access.log;
+	    error_log off;
+	}
+	EOF
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
     chown -R "${_www_user}:${_www_group}" "/var/log/nginx"
