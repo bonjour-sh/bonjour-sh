@@ -84,8 +84,22 @@ _nginx_install() (
         -keyout "${_local_etc}/nginx/default_server.key" \
         -out "${_local_etc}/nginx/default_server.crt" \
         -subj "/C=FR/ST=/L=Paris/O=/CN=*"
-    # Generate the Diffie-Hellman parameters
-    openssl dhparam -out "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam_numbits"
+    # Get the Diffie-Hellman parameters file
+    case "$nginx_dhparam" in
+        http://*|https://*)
+            curl -o "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam"
+            ;;
+        /*)
+            cp "$nginx_dhparam" "${_local_etc}/nginx/dhparam.pem"
+            ;;
+        [0-9]*)
+            openssl dhparam -out "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam"
+            ;;
+    esac
+    if ! openssl dhparam -in "${_local_etc}/nginx/dhparam.pem" > /dev/null 2>&1; then
+        echo "Invalid DH params file (received ${nginx_dhparam})" >&2
+        return 1
+    fi
     # Reusable piece
     cat > "${_local_etc}/nginx/snippets/certbot_standalone.conf" <<-'EOF'
 	location ^~ /.well-known/acme-challenge/ {
