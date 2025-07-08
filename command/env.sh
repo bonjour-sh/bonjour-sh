@@ -5,3 +5,7 @@
 _env_command_os() {
     echo $BONJOUR_OS
 }
+
+_env_command_var() {
+    echo $(_ $1)
+}
