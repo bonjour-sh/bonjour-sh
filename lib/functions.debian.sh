@@ -5,7 +5,26 @@
 _package() (
     case $1 in
         install)
-            DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends -o Dpkg::Options::="--force-confnew" $2
+            # See if a real package with this name exists
+            _package_real=$(apt-cache show "$2" 2>/dev/null | awk '/^Package:/ { print $2; exit }')
+            if [ -z "$_package_real" ]; then
+                # Otherwise try resolving virtual packages
+                _package_resolved=$(apt-cache showpkg "$2" 2>/dev/null | \
+                    awk '/^Reverse Provides:/ {found=1; next} found && NF { print $1; exit }')
+            fi
+            # If resolved, use that
+            if [ -n "$_package_resolved" ]; then
+                _package_real="$_package_resolved"
+            fi
+            [ "$BONJOUR_DEBUG" ] && echo "_package install ${_package_real}/${_package_resolved}" >&2
+            _quiet=
+            if [ "$BONJOUR_DEBUG" ]; then
+                _quiet='-q'
+            fi
+            DEBIAN_FRONTEND=noninteractive apt-get install $_quiet \
+                -y --no-install-recommends \
+                -o Dpkg::Options::="--force-confnew" \
+                "$_package_real"
             ;;
         purge)
             apt-get purge -y $2*
