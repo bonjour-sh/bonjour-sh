@@ -98,16 +98,16 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-EOF
-	if (-d /var/www/\$server_name) {
-	    include /var/www/\$server_name/nginx*.conf;
+	if (-d ${_www_root}/\$server_name) {
+	    include ${_www_root}/\$server_name/nginx*.conf;
 	}
 	location / {
-	    if (!-d /var/www/\$server_name/public) {
+	    if (!-d ${_www_root}/\$server_name/public) {
 	        return 404;
 	    }
 	    # Ensure redirect to 1. primary domain and 2. HTTPs if available
 	    set \$flag_https_s ""; # default to no HTTPs
-	    if (-f /usr/local/etc/letsencrypt/live/\$server_name/fullchain.pem) {
+	    if (-f ${_local_etc}/letsencrypt/live/\$server_name/fullchain.pem) {
 	        set \$flag_https_s "s"; # plan redirect if cert exists
 	    }
 	    if (\$scheme = https) {
@@ -121,7 +121,7 @@ _nginx_install() (
 	    if (\$flag_https != "") { # redirect if at least one flag is not empty
 	        return 301 "http\${flag_https_s}://\${server_name}\${request_uri}";
 	    }
-	    root /var/www/\$server_name/public;
+	    root ${_www_root}/\$server_name/public;
 	    access_log /var/log/nginx/vhost-\$server_name.access.log;
 	    error_log off;
 	}
