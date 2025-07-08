@@ -16,7 +16,12 @@ BONJOUR_OS=$(
     )
 )
 export BONJOUR_DEBUG BONJOUR_DIR BONJOUR_OS
-printf "$0 in $BONJOUR_DIR on $BONJOUR_OS\n\n"
+
+printf "+------------------------------------------+\n" >&2
+printf "| %-40s |\n" "`date`" >&2
+printf "|                                          |\n" >&2
+printf "|`tput bold` %-40s `tput sgr0`|\n" "$0 on $BONJOUR_OS" >&2
+printf "+------------------------------------------+\n\n" >&2
 
 # Include reusable functions
 if [ -f "${BONJOUR_DIR}/lib/functions.${BONJOUR_OS}.sh" ]; then
