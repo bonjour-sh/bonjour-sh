@@ -21,6 +21,7 @@ _host_command_add() {
     if [ "$BONJOUR_NONINTERACTIVE" != "true" ] && [ -n "$_aliases" ]; then
         _prompt_alias
     fi
+    _web_root="$(_ www_root)/${_domain}"
     cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
@@ -28,6 +29,8 @@ _host_command_add() {
 	    include snippets/vhost.conf;
 	}
 	EOF
+    mkdir -p "${_web_root}"
+    mkdir -p "${_web_root}/public"
     service nginx restart
     _certbot_certonly "${_domain} ${_aliases}"
     if [ $? -ne 0 ]; then
