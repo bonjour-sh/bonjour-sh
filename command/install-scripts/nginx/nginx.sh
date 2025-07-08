@@ -107,7 +107,7 @@ _nginx_install() (
 	    }
 	    # Ensure redirect to 1. primary domain and 2. HTTPs if available
 	    set \$flag_https_s ""; # default to no HTTPs
-	    if (-f ${_local_etc}/letsencrypt/live/\$server_name/fullchain.pem) {
+	    if (-f ${_www_root}/\$server_name/ssl/cert) {
 	        set \$flag_https_s "s"; # plan redirect if cert exists
 	    }
 	    if (\$scheme = https) {
@@ -129,8 +129,8 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     cat > "${_local_etc}/nginx/snippets/vhost_ssl.conf" <<-EOF
-	ssl_certificate ${_local_etc}/letsencrypt/live/\$server_name/fullchain.pem;
-	ssl_certificate_key ${_local_etc}/letsencrypt/live/\$server_name/privkey.pem;
+	ssl_certificate ${_www_root}/\$server_name/ssl/cert;
+	ssl_certificate_key ${_www_root}/\$server_name/ssl/key;
 	ssl_dhparam ${_local_etc}/nginx/dhparam.pem;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 	ssl_prefer_server_ciphers on;

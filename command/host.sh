@@ -38,6 +38,9 @@ _host_command_add() {
         return 1
     fi
     chmod -R g+r "$(_ local_etc)/letsencrypt/archive/${_domain}"
+    mkdir -p "${_web_root}/ssl"
+    ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_root}/ssl/cert"
+    ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_root}/ssl/key"
     cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
