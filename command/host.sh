@@ -37,6 +37,7 @@ _host_command_add() {
         echo "Certbot failed. Aborting."
         return 1
     fi
+    chmod -R g+r "$(_ local_etc)/letsencrypt/archive/${_domain}"
     cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
