@@ -2,7 +2,7 @@
 #
 # FreeBSD-specific implementation for ./functions.sh
 
-_package() {
+_package() (
     case $1 in
         install)
             # FreeBSD package names can be less straightforward compared to Debian:
@@ -50,7 +50,7 @@ _package() {
             pkg autoremove -y
             ;;
     esac
-}
+)
 
 # _at_boot - OS-agnostic wrapper to enable/disable a service at boot
 # Depending on ACTION:

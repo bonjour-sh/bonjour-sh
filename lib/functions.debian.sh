@@ -2,7 +2,7 @@
 #
 # Debian-specific implementation for ./functions.sh
 
-_package() {
+_package() (
     case $1 in
         install)
             DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends -o Dpkg::Options::="--force-confnew" $2
@@ -17,7 +17,7 @@ _package() {
             apt-get autoremove -y
             ;;
     esac
-}
+)
 
 # _at_boot - OS-agnostic wrapper to enable/disable a service at boot
 # Depending on ACTION:
