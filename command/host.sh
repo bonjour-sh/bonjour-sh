@@ -2,9 +2,6 @@
 #
 # Manage web sites, web apps and web services
 
-_host_command() {
-}
-
 _prompt_alias() {
     if [ -n "$1" ]; then
         _aliases="${_aliases} ${1}"
