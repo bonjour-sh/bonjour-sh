@@ -188,7 +188,7 @@ _system_install() {
     # Restrict SSH to whitelisted hosts
     if [ -n "$whitelisted_hosts" ]; then
         _firewall 'ssh-restrict' flush
-        for _whitelisted_host in "$whitelisted_hosts"; do
+        for _whitelisted_host in $whitelisted_hosts; do
             _firewall 'ssh-restrict' allow "$_whitelisted_host" in ":${ssh_port}"
             _firewall 'ssh-restrict' allow ":${ssh_port}" out "$_whitelisted_host"
         done
