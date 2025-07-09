@@ -9,3 +9,7 @@ _env_command_os() {
 _env_command_var() {
     echo $(_ $1)
 }
+
+_env_command_package() (
+    echo $(_package_resolve $1)
+)

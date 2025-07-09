@@ -2,29 +2,38 @@
 #
 # Debian-specific implementation for ./functions.sh
 
+_package_resolve() (
+    # See if a real package with this name exists
+    _package_real=$(apt-cache show "$1" 2>/dev/null | awk '/^Package:/ { print $2; exit }')
+    if [ -n "$_package_real" ]; then
+        printf '%s' "$_package_real"
+        return 0
+    fi
+    # Otherwise try resolving virtual packages
+    _package_resolved=$(apt-cache showpkg "$1" 2>/dev/null | \
+        awk '/^Reverse Provides:/ {found=1; next} found && NF { print $1; exit }')
+    # If resolved, use that
+    if [ -n "$_package_resolved" ]; then
+        printf '%s' "$_package_resolved"
+        return 0
+    fi
+    echo "Cannot resolve package ${1}" >&2
+    return 1
+)
+
 _package() (
     case $1 in
         install)
-            # See if a real package with this name exists
-            _package_real=$(apt-cache show "$2" 2>/dev/null | awk '/^Package:/ { print $2; exit }')
-            if [ -z "$_package_real" ]; then
-                # Otherwise try resolving virtual packages
-                _package_resolved=$(apt-cache showpkg "$2" 2>/dev/null | \
-                    awk '/^Reverse Provides:/ {found=1; next} found && NF { print $1; exit }')
-            fi
-            # If resolved, use that
-            if [ -n "$_package_resolved" ]; then
-                _package_real="$_package_resolved"
-            fi
-            [ "$BONJOUR_DEBUG" ] && echo "_package install ${_package_real}/${_package_resolved}" >&2
             _quiet=
             if [ "$BONJOUR_DEBUG" ]; then
                 _quiet='-q'
             fi
+            _package_resolved=$(_package_resolve $2)
+            [ "$BONJOUR_DEBUG" ] && echo "_package install ${2}/${_package_resolved}" >&2
             DEBIAN_FRONTEND=noninteractive apt-get install $_quiet \
                 -y --no-install-recommends \
                 -o Dpkg::Options::="--force-confnew" \
-                "$_package_real"
+                "$_package_resolved"
             ;;
         purge)
             apt-get purge -y $2*
