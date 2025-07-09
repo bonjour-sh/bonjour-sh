@@ -11,8 +11,15 @@ _package_resolve() (
     # fail2ban       | py311-fail2ban
     # mariadb-server | mariadb1011-server
     #
+    _name="$1"
+    # Some packages have different name-version conventions across the systems
+    case "$_name" in
+        php*) # Debian: php8.2-gd; FreeBSD: php82-gd
+            _name=$(printf "%s" "$_name" | tr -d '.')
+            ;;
+    esac
     # This piece guesses a FreeBSD candidate based on a Debian package name
-    pkg rquery -g '%n' "*$(echo "$1" | sed 's/-/*-/g')" | awk -v name="$1" '
+    pkg rquery -g '%n' "*$(echo "$_name" | sed 's/-/*-/g')" | awk -v name="$_name" '
         {
             # first prefer exact matches ("nginx" = "nginx")
             if ($0 == name) {
