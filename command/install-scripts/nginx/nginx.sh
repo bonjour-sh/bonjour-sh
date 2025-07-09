@@ -143,8 +143,10 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     cat > "${_local_etc}/nginx/snippets/vhost_ssl.conf" <<-EOF
-	ssl_certificate ${_www_root}/\$server_name/ssl/cert;
-	ssl_certificate_key ${_www_root}/\$server_name/ssl/key;
+	# Server name is evaluated at request after privilege drop. So _www_user may
+	# not have read permissions to SSL key in LE archive, unless specifically allowed
+	#ssl_certificate ${_www_root}/\$server_name/ssl/cert;
+	#ssl_certificate_key ${_www_root}/\$server_name/ssl/key;
 	ssl_dhparam ${_local_etc}/nginx/dhparam.pem;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 	ssl_prefer_server_ciphers on;
