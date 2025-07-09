@@ -45,6 +45,7 @@ _system_pre_install_debian() {
     _package install apt-transport-https
     _package install ca-certificates
     _package install lsb-release
+    _package install gnupg
     # Update sources.list
     _debian_codename=$(lsb_release -sc)
     cat /dev/null > /etc/apt/sources.list
