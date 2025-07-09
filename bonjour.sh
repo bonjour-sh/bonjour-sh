@@ -23,6 +23,10 @@ printf "|                                          |\n" >&2
 printf "|`tput bold` %-40s `tput sgr0`|\n" "$0 on $BONJOUR_OS" >&2
 printf "+------------------------------------------+\n\n" >&2
 
+# Read our configuration, if any
+if [ -f "${HOME}/.bonjour.env" ]; then
+    . "${HOME}/.bonjour.env"
+fi
 # Include reusable functions
 if [ -f "${BONJOUR_DIR}/lib/functions.${BONJOUR_OS}.sh" ]; then
     . "${BONJOUR_DIR}/lib/functions.${BONJOUR_OS}.sh"
