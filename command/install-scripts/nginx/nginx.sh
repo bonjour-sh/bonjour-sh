@@ -86,13 +86,13 @@ _nginx_install() (
         -subj "/C=FR/ST=/L=Paris/O=/CN=*"
     # Get the Diffie-Hellman parameters file
     case "$nginx_dhparam" in
-        http://*|https://*)
+        http://*|https://*) # received a URL to fetch the file from
             curl -o "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam"
             ;;
-        /*)
+        /*) # received path to existing file
             cp "$nginx_dhparam" "${_local_etc}/nginx/dhparam.pem"
             ;;
-        [0-9]*)
+        [0-9]*) # received numbits - generate a new file
             openssl dhparam -out "${_local_etc}/nginx/dhparam.pem" "$nginx_dhparam"
             ;;
     esac
