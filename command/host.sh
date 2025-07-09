@@ -34,7 +34,6 @@ _host_command_add() {
         echo "Certbot failed. Aborting."
         return 1
     fi
-    chmod -R g+r "$(_ local_etc)/letsencrypt/archive/${_domain}"
     mkdir -p "${_web_root}/ssl"
     ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_root}/ssl/cert"
     ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_root}/ssl/key"
@@ -42,6 +41,9 @@ _host_command_add() {
 	server {
 	    server_name ${_domain} ${_aliases};
 	    listen 443 ssl;
+	    # No variables means Nginx preloads certs on start with root privileges
+	    ssl_certificate ${_web_root}/ssl/cert;
+	    ssl_certificate_key ${_web_root}/ssl/key;
 	    include snippets/vhost.conf;
 	    include snippets/vhost_ssl.conf;
 	}
