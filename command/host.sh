@@ -12,6 +12,15 @@ _prompt_alias() {
     fi
 }
 
+_host_command_list() (
+    for _vhost in $(_ local_etc)/nginx/conf.d/vhost_*_*.conf; do
+        IFS=_ read -r _prefix _host _port <<-EOF
+		$(basename $_vhost '.conf')
+		EOF
+        printf '%s :%s\n' "$_host" "$_port"
+    done
+)
+
 _host_command_add() {
     _domain=$(_input 'domain' 'Domain name for the new web service' '' '' "$@")
     _aliases=$(_input 'aliases' 'Domain alias (leave blank to skip)' '' '' "$@")
