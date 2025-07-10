@@ -19,6 +19,8 @@ _nginx_install() (
     _package install certbot
     [ -d "${_local_etc}/nginx/sites-available" ] && rm -rf "${_local_etc}/nginx/sites-available"
     [ -d "${_local_etc}/nginx/sites-enabled" ] && rm -rf "${_local_etc}/nginx/sites-enabled"
+    [ -d "${_local_etc}/nginx/modules-available" ] && rm -rf "${_local_etc}/nginx/modules-available"
+    [ -d "${_local_etc}/nginx/modules-enabled" ] && rm -rf "${_local_etc}/nginx/modules-enabled"
     [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
     [ -d "${_local_etc}/nginx/snippets" ] && rm -rf "${_local_etc}/nginx/snippets"
     # Whole files included in main nginx.conf as conf.d/*.conf
