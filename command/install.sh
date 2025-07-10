@@ -76,7 +76,7 @@ _install_command() (
                         _func="_${_installer_name}_prompt_${_env_key}"
                         if type "$_func" 2>/dev/null | grep -q 'function'; then
                             # A callback prompt function has been defined for this variable
-                            _env_value=$("$_func" "$@")
+                            _env_value=$("$_func" "$_env_prompt" "$_env_default" "$_env_help" "$@")
                         else
                             # Call _input for this variable
                             _env_value=$(_input "$_env_key" "$_env_prompt" "$_env_default" "$_env_help" "$@")
