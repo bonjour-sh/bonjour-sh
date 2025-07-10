@@ -56,8 +56,11 @@ _install_command() (
             while IFS= read -r line || [ -n "$line" ]; do
                 case "$line" in
                     \#*)
-                        # Standalone comment line, append to future help text
-                        _env_help="${_env_help}${line#\# }\\n"
+                        # Standalone comment line
+                        # Escape any \n to display exactly like in source file
+                        line_escaped=$(printf '%s' "${line#\# }" | sed 's/\\/\\\\/g')
+                        # Append to future help text
+                        _env_help="${_env_help}${line_escaped}\\n"
                         ;;
                     [a-zA-Z_]*=*)
                         # Line starts with valid shell variable name
