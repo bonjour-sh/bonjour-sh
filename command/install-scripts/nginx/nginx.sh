@@ -14,16 +14,13 @@ _nginx_pre_install_debian() {
     wget https://nginx.org/keys/nginx_signing.key -O - | apt-key add -
 }
 
-_nginx_pre_install() {
+_nginx_install() (
+    _package install nginx
+    _package install certbot
     [ -d "${_local_etc}/nginx/sites-available" ] && rm -rf "${_local_etc}/nginx/sites-available"
     [ -d "${_local_etc}/nginx/sites-enabled" ] && rm -rf "${_local_etc}/nginx/sites-enabled"
     [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
     [ -d "${_local_etc}/nginx/snippets" ] && rm -rf "${_local_etc}/nginx/snippets"
-}
-
-_nginx_install() (
-    _package install nginx
-    _package install certbot
     # Whole files included in main nginx.conf as conf.d/*.conf
     mkdir -p "${_local_etc}/nginx/conf.d"
     # Reusable parts to be included in individual configs
