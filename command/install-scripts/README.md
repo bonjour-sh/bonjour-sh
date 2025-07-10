@@ -35,16 +35,20 @@ You can have dynamic prompts with additional validation or processing for certai
 
 ```
 _example_prompt_ip() (
+    _prompt=$1 # shorthand to prompt text
+    _defaults=$2 # shorthand to default value(s)
+    _help=$3 # shorthand to help text
+    shift 3 # drop first 3 args
     # You can call an external program to get your public IP here if needed.
-    _default_ip="0.0.0.0"
+    _defaults="0.0.0.0"
     # Prompt
-    _provided_ip=$(_input 'ip' 'IP address' "$_default_ip" 'Please enter an IPv4 address' "$@")
+    _provided_ip=$(_input 'ip' "$_prompt" "$_defaults" "$_help" "$@")
     # Here you can test the value you received
     ping -c 1 "${_provided_ip}">/dev/null 2>&1
     if [ "$?" -gt "0" ]; then
         echo "${_provided_ip} is not connectable." >&2
         # Prompt again
-        _example_prompt_ip "$@"
+        _example_prompt_ip "$_prompt" "$_defaults" "$_help" "$@"
     fi
     echo "$_provided_ip"
 )

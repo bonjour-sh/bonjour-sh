@@ -9,33 +9,35 @@ whitelisted_hosts_default=$(who | awk '{print $NF}' | grep -Eo '([0-9]{1,3}\.){3
 
 # Hijack certain prompts
 _system_prompt_server_ip() (
-    _detected_ip=$(_get_public_ip)
-    _provided_ip=$(_input 'server_ip' 'Public IP address' "$_detected_ip" '' "$@")
+    _prompt=$1 # shorthand to prompt text
+    _defaults=$2 # shorthand to default value(s)
+    _help=$3 # shorthand to help text
+    shift 3 # drop first 3 args
+    _defaults=$(_get_public_ip)
+    _provided_ip=$(_input 'server_ip' "$_prompt" "$_defaults" "$_help" "$@")
     if ! { echo "$_provided_ip" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; }; then
         echo "${_provided_ip} does not look like a valid IPv4 address" >&2
-        _system_prompt_server_ip "$@"
+        _system_prompt_server_ip "$_prompt" "$_defaults" "$_help" "$@"
     fi
     ping -c 1 "${_provided_ip}">/dev/null 2>&1
     if [ "$?" -gt "0" ]; then
         echo "${_provided_ip} is not connectable." >&2
-        _system_prompt_server_ip "$@"
+        _system_prompt_server_ip "$_prompt" "$_defaults" "$_help" "$@"
         return
     fi
     echo "$_provided_ip"
 )
 _system_prompt_ssh_pubkey() (
-    _provided_pubkey=$(_input \
-        'ssh_pubkey' \
-        'Paste your public key' \
-        '' \
-        'The public key you will be connecting to the server with. Will be validated before proceeding.' \
-        "$@" \
-    )
+    _prompt_text=$1 # shorthand to prompt text
+    _defaults=$2 # shorthand to default value(s); not used here
+    _help=$3 # shorthand to help text
+    shift 3 # drop first 3 args
+    _provided_pubkey=$(_input 'ssh_pubkey' "$_prompt_text" '' "$_help" "$@")
     # Make sure the provided public key is valid
     printf "$_provided_pubkey" | ssh-keygen -l -f - > /dev/null
     if [ $? -ne 0 ]; then
         printf "The public key you provided is not valid.\n" >&2
-        _system_prompt_ssh_pubkey "$@"
+        _system_prompt_ssh_pubkey "$_prompt_text" '' "$_help" "$@"
         return
     fi
     printf "$_provided_pubkey"
