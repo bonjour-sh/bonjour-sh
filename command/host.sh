@@ -17,7 +17,7 @@ _host_command_list() (
         IFS=_ read -r _prefix _host _port <<-EOF
 		$(basename $_vhost '.conf')
 		EOF
-        printf '%s :%s\n' "$_host" "$_port"
+        printf 'http%s://%s\n' "$([ "$_port" = '443' ] && echo 's')" "$_host"
     done
 )
 
