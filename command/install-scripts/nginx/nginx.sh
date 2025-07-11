@@ -8,9 +8,10 @@ _www_user=$(_ www_user)
 _www_group=$(_ www_group)
 
 _nginx_pre_install_debian() {
-    _debian_codename=$(lsb_release -sc)
-    echo "deb http://nginx.org/packages/debian/ ${_debian_codename} nginx" >> /etc/apt/sources.list
-    echo "deb-src http://nginx.org/packages/debian/ ${_debian_codename} nginx" >> /etc/apt/sources.list
+    _insert_once /etc/apt/sources.list.d/nginx.org.list <<-EOF
+	deb http://nginx.org/packages/debian/ $(lsb_release -sc) nginx
+	deb-src http://nginx.org/packages/debian/ $(lsb_release -sc) nginx
+	EOF
     wget https://nginx.org/keys/nginx_signing.key -O - | apt-key add -
 }
 
