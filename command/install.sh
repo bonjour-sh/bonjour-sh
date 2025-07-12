@@ -25,6 +25,11 @@ done
 
 _pre_install_debian() (
     apt-get update
+    # Some services restart repeatedly during scripted setup. Eventually systemd
+    # refuses to start them, and they are in failed state when install finishes.
+    # Below sets rate limiting time window to 0, disabling this behaviour.
+    # freedesktop.org/software/systemd/man/latest/systemd.unit.html#StartLimitIntervalSec=interval
+    [ -f /etc/systemd/system.conf ] && _config /etc/systemd/system.conf '#' = DefaultStartLimitIntervalSec 0
 )
 
 _install_command() (
