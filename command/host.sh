@@ -32,6 +32,7 @@ _host_command_add() {
 	server {
 	    server_name ${_domain} ${_aliases};
 	    listen 80;
+	    include ${_web_root}/nginx*.conf;
 	    include snippets/vhost.conf;
 	}
 	EOF
@@ -53,6 +54,7 @@ _host_command_add() {
 	    # No variables means Nginx preloads certs on start with root privileges
 	    ssl_certificate ${_web_root}/ssl/cert;
 	    ssl_certificate_key ${_web_root}/ssl/key;
+	    include ${_web_root}/nginx*.conf;
 	    include snippets/vhost.conf;
 	    include snippets/vhost_ssl.conf;
 	}

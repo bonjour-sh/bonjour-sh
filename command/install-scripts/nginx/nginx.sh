@@ -112,9 +112,6 @@ _nginx_install() (
 	EOF
     # EOF above must be indented with 1 tab character
     cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-EOF
-	if (-d ${_www_root}/\$server_name) {
-	    include ${_www_root}/\$server_name/nginx*.conf;
-	}
 	location / {
 	    if (!-d ${_www_root}/\$server_name/public) {
 	        return 404;
