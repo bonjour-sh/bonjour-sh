@@ -23,6 +23,10 @@ for _installer_dir in "$_installer_path"/*; do
     unset -v _installer_dir _installer_name
 done
 
+_pre_install_debian() (
+    apt-get update
+)
+
 _install_command() (
     _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" '' "$@")
     # 0.1. Load all selected installers and their default configurations (if any)
@@ -108,6 +112,10 @@ _install_command() (
             "$_func" "$@"
         fi
     done
+    _func="_pre_install_${BONJOUR_OS}" # shared pre-install for current OS
+    if type "$_func" 2>/dev/null | grep -q 'function'; then
+        "$_func" "$@"
+    fi
     # 3. (Non-interactive) Run installers
     for _installer_name in $_installers; do
         _func="_${_installer_name}_install_${BONJOUR_OS}"
