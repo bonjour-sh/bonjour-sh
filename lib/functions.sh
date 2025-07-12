@@ -134,10 +134,13 @@ _get_public_ip() (
 )
 
 # _insert_once - insert line into file, checking if it exists before inserting
-# Usage: _insert_once LINE FILE
-# Arguments:
+# Usage: _insert_once LINE FILE or _insert_once FILE <<EOF\nLINE(1..n)\nEOF
+# Arguments when using 2 arguments:
 #   $1 - LINE: full line without trailing \n
 #   $2 - FILE: path to file where LINE should be present
+# Arguments when using 1 argument:
+#   $1 - FILE: path to file where LINEs should be present
+#   heredoc to function stdin - LINE1, LINE2, LINEn: full lines separated by \n
 _insert_once() {
     # If received 1 argument, that should be the file path and input is heredoc
     if [ $# -eq 1 ]; then
