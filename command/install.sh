@@ -32,6 +32,10 @@ _pre_install_debian() (
     [ -f /etc/systemd/system.conf ] && _config /etc/systemd/system.conf '#' = DefaultStartLimitIntervalSec 0
 )
 
+_pre_install_freebsd() (
+    pkg update
+)
+
 _install_command() (
     _installers=$(_input 'installers' 'Choose what to install' "$_available_installers" '' "$@")
     # 0.1. Load all selected installers and their default configurations (if any)
