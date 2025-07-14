@@ -59,7 +59,12 @@ _system_pre_install_debian() {
     apt-get update
     # Restore iptables rules on boot
     mkdir -p /etc/iptables-bonjour
-    echo "iptables rules restored by /etc/network/if-up.d/iptables-bonjour" > /etc/iptables-bonjour/README
+    cat > /etc/iptables-bonjour/README <<-EOF
+	Iptables rules stored in individual .sh files and managed by bonjour-sh.
+	Each .sh file contains a simple `iptables ...` command. Shebang is optional.
+	The rules are restored by /etc/network/if-up.d/iptables-bonjour on boot.
+	EOF
+    # EOF above must be indented with 1 tab character
     cat > /etc/network/if-up.d/iptables-bonjour <<-'EOF'
 	#!/bin/sh
 	[ -f "/run/iptables-bonjour.lock" ] && exit 0
