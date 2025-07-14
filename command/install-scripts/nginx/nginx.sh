@@ -118,8 +118,8 @@ _nginx_install() (
 	    }
 	    # Ensure redirect to 1. primary domain and 2. HTTPs if available
 	    set \$flag_https_s ""; # default to no HTTPs
-	    if (-f ${_www_root}/\$server_name/ssl/cert) {
-	        set \$flag_https_s "s"; # plan redirect if cert exists
+	    if (-f ${_local_etc}/nginx/conf.d/vhost_\${server_name}_443.conf) {
+	        set \$flag_https_s "s"; # plan redirect if HTTPs config exists
 	    }
 	    if (\$scheme = https) {
 	        set \$flag_https_s ""; # remove flag if we're already on HTTPs
