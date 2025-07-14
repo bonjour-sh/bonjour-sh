@@ -57,7 +57,10 @@ _package() (
 #   $2 - SERVICE: service name
 #   $3 - ACT_IMMEDIATELY: true to start/stop (depending on ACTION) the service now
 _at_boot() (
-    systemctl "$1" "$2"
+    case "$1" in
+        'enable') update-rc.d "$2" defaults ;;
+        'disable') update-rc.d -f "$2" remove ;;
+    esac
     if [ "_$3" = "_true" ]; then
         service "$2" $( [ "_$1" = "_enable" ] && echo start || echo stop )
     fi
