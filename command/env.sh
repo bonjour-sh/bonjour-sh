@@ -13,3 +13,8 @@ _env_command_var() {
 _env_command_package() (
     echo $(_package_resolve $1)
 )
+
+_env_command_path() (
+    _self=$(realpath "$0")
+    echo $(dirname "$_self")
+)
