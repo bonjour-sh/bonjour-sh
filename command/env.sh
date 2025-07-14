@@ -18,3 +18,7 @@ _env_command_path() (
     _self=$(realpath "$0")
     echo $(dirname "$_self")
 )
+
+_env_command_log() {
+    echo "[$(date '+%F %T')] $1" >> /var/log/bonjour-sh.log
+}
