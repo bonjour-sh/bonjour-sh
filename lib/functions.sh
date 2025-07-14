@@ -11,6 +11,13 @@ _() (
     eval "echo \$$1"
 )
 
+_is_systemd_system() (
+    # freedesktop.org/software/systemd/man/latest/sd_booted.html
+    [ -d "/run/systemd/system" ] && return 0
+    [ "$(ps -p 1 -o comm= 2>/dev/null)" = "systemd" ] && return 0
+    return 1
+)
+
 _input() (
     _name=$1 # shorthand to the name of requested variable
     _prompt_text=$2 # shorthand to the prompt text

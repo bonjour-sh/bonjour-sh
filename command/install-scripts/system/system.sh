@@ -78,7 +78,7 @@ _system_pre_install_debian() {
     # EOF above must be indented with 1 tab character
     chmod +x /etc/network/if-up.d/iptables-bonjour
     # For systems where ifup is not present
-    if ! command -v ifup >/dev/null 2>&1 && [ "$(ps -p 1 -o comm=)" = "systemd" ]; then
+    if ! command -v ifup >/dev/null 2>&1 && _is_systemd_system; then
         cat > /etc/systemd/system/iptables-bonjour.service <<-EOF
 		[Unit]
 		Description=Restore iptables rules on network up
@@ -139,7 +139,7 @@ _system_install_debian() {
     _package install net-tools # provides netstat
     _package install netcat # provides nc
     _package install python3-gi # fix "Unable to monitor PrepareForShutdown() signal"
-    _package install python3-systemd # fix fail2ban "Backend 'systemd' failed to initialize due to No module named 'systemd'"
+    _is_systemd_system && _package install python3-systemd # fix fail2ban backend failed to initialize no module named systemd
 }
 
 _system_install() {
@@ -260,8 +260,8 @@ _system_install() {
 }
 
 _system_post_install_debian() {
-    # Configure fail2ban on systemd - superuser.com/a/1838559
-    [ ! -f /var/log/auth.log ] && _insert_once 'sshd_backend = systemd' /etc/fail2ban/paths-debian.conf
+    # Configure fail2ban on systemd (no /var/log/auth.log) - superuser.com/a/1838559
+    _is_systemd_system && _insert_once 'sshd_backend = systemd' /etc/fail2ban/paths-debian.conf
 }
 
 _system_post_install() {
