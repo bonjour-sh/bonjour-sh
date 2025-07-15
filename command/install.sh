@@ -99,7 +99,7 @@ _install_command() (
                         fi
                         # Overwrite environment variable with value we collected
                         eval "${_env_key}=\${_env_value}"
-                        # Save the answer for future (re)use and reference
+                        # Save answer for future (re)use and reference. Quote the value.
                         _config "${HOME}/.bonjour.env" '#' '=' "$_env_key" "'$_env_value'"
                         # Clean up
                         unset -v _env_key _env_default _func _env_value
