@@ -47,7 +47,7 @@ _input() (
     _value='' # default to empty
     # Loop through (remaining) arguments and/or flags passed to the script
     for _arg in "$@"; do
-        _key=$(echo $_arg | cut -f1 -d=) # parse --KEY out of --KEY=VALUE
+        _key="${_arg%%=*}" # parse --KEY out of --KEY=VALUE
         if [ "$_key" != "--$_name" ]; then # skip keys that don't match
             continue
         fi
