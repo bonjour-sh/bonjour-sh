@@ -8,7 +8,7 @@ _() (
         echo "Dictionary file .${BONJOUR_OS}.env not found in ${BONJOUR_DIR}" >&2
     fi
     . "${BONJOUR_DIR}/.${BONJOUR_OS}.env"
-    eval "echo \$$1"
+    eval "printf '%s' \$$1"
 )
 
 _is_systemd_system() (
@@ -103,7 +103,7 @@ _input() (
         _input "$_name" "$_prompt_text" "$_defaults" "$_help" "$@"
         return 0 # prevent debugging nested _input calls
     fi
-    $BONJOUR_DEBUG && printf "    _value '$_value'" >&2
+    $BONJOUR_DEBUG && printf '    _value "%s"' "$_value" >&2
     # Assume the defaults if $_value is still empty at this point
     if [ -z "$_value" ]; then
         _value="$_defaults"
@@ -115,9 +115,9 @@ _input() (
             [Nn]) _value=false ;;
         esac
     fi
-    $BONJOUR_DEBUG && printf " -> '$_value'\n</_input>\n\n" >&2
+    $BONJOUR_DEBUG && printf ' -> "%s"\n</_input>\n\n' "$_value" >&2
     # Return the value
-    echo "$_value"
+    printf '%s' "$_value"
     # Clean up
     unset -v _name _prompt_text _defaults _type _value _prompt_defaults _help
 )
@@ -159,7 +159,7 @@ _insert_once() {
     # Make sure the file exists
     [ -f "$2" ] || touch "$2"
     # Check if the line already exists in the file; if not, append it
-    grep -qxF "$1" "$2" || echo "$1" >> "$2"
+    grep -qxF "$1" "$2" || printf '%s' "$1" >> "$2"
 }
 
 _config() (
