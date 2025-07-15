@@ -200,8 +200,8 @@ _config() (
         # Value not present; commenting out the key
         _replace="${_c}${_k}\1"
     else
-        # Setting key to value
-        _replace="${_k}${_a}${_v}"
+        # Setting key to value; escape backslashes to preserve literal `\n`
+        _replace="${_k}${_a}$(printf '%s' "$_v" | sed 's/\\/\\\\/g')"
         # If there is a value to set, make sure the key exists in the file
         if ! grep -q "$_match" "$_f"; then
             printf "${_k}\n" >> "$_f" # sed below will set actual value
