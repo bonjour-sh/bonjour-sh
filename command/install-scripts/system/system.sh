@@ -25,7 +25,7 @@ _system_prompt_server_ip() (
         _system_prompt_server_ip "$_prompt" "$_defaults" "$_help" "$@"
         return
     fi
-    echo "$_provided_ip"
+    printf '%s' "$_provided_ip"
 )
 _system_prompt_ssh_pubkey() (
     _prompt_text=$1 # shorthand to prompt text
@@ -40,7 +40,7 @@ _system_prompt_ssh_pubkey() (
         _system_prompt_ssh_pubkey "$_prompt_text" '' "$_help" "$@"
         return
     fi
-    printf "$_provided_pubkey"
+    printf '%s' "$_provided_pubkey"
 )
 
 _system_pre_install_debian() {
