@@ -78,21 +78,9 @@ _system_pre_install_debian() {
     # EOF above must be indented with 1 tab character
     chmod +x /etc/network/if-up.d/iptables-bonjour
     # For systems where ifup is not present
-    if ! command -v ifup >/dev/null 2>&1 && _is_systemd_system; then
-        cat > /etc/systemd/system/iptables-bonjour.service <<-EOF
-		[Unit]
-		Description=Restore iptables rules on network up
-		After=network-online.target
-		Wants=network-online.target
-		[Service]
-		Type=oneshot
-		ExecStart=/etc/network/if-up.d/iptables-bonjour
-		[Install]
-		WantedBy=multi-user.target
-		EOF
-        # EOF above must be indented with 2 tab characters
-        systemctl daemon-reload
-        systemctl enable iptables-bonjour.service
+    if ! command -v ifup >/dev/null 2>&1; then
+        _generate_rcd 'iptables-bonjour' '/etc/network/if-up.d/iptables-bonjour' ':'
+        _at_boot enable 'iptables-bonjour' # schedule above init script at boot
     fi
 
 }
