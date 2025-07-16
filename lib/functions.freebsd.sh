@@ -87,7 +87,7 @@ _generate_rcd() (
     cat > "/usr/local/etc/rc.d/${1}" <<-EOF
 	#!/bin/sh
 	# PROVIDE: ${1}
-	# REQUIRE: NETWORKING
+	# REQUIRE: FILESYSTEMS NETWORKING
 	# KEYWORD: shutdown
 	PATH="\$PATH:/usr/local/bin" # ensure bonjour command is found
 	name="$1"
