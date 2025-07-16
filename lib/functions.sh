@@ -156,6 +156,17 @@ _insert_once() {
         done
         return # return early
     fi
+    # If received 2 arguments, see if the value contains literal `\n`
+    case "$1" in
+        *\\n*) # value contains literal backslash character followed by n
+            # Call self via heredoc converting literal `\n` into new line
+            _insert_once "$2" <<-EOF
+			$(printf "%s" "$1" | sed 's/\\n/\n/g')
+			EOF
+            return $? # return early
+            ;;
+    esac
+    # At this point we can treat the value in $1 as one plain line
     # Make sure the file exists
     [ -f "$2" ] || touch "$2"
     # Check if the line already exists in the file; if not, append it
