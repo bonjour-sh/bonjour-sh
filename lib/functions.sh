@@ -8,7 +8,7 @@ _() (
         echo "Dictionary file .${BONJOUR_OS}.env not found in ${BONJOUR_DIR}" >&2
     fi
     . "${BONJOUR_DIR}/.${BONJOUR_OS}.env"
-    eval "printf '%s' \$$1"
+    eval "printf '%s' \"\${$1}\""
 )
 
 _is_systemd_system() (
