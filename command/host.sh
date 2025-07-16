@@ -68,6 +68,6 @@ _host_command_add() {
 	    include snippets/vhost_ssl.conf;
 	}
 	EOF
+    chown -R "$ssh_user" "${_web_home}"
     service nginx restart
 }
-
