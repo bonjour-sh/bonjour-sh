@@ -159,7 +159,7 @@ _insert_once() {
     # Make sure the file exists
     [ -f "$2" ] || touch "$2"
     # Check if the line already exists in the file; if not, append it
-    grep -qxF "$1" "$2" || printf '%s' "$1" >> "$2"
+    grep -qxF "$1" "$2" || printf '%s\n' "$1" >> "$2"
 }
 
 _config() (
