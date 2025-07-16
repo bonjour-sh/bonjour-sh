@@ -46,6 +46,7 @@ _host_command_add() {
     _certbot_certonly "${_domain} ${_aliases}"
     if [ $? -ne 0 ]; then
         echo "Certbot failed. Aborting."
+        rm "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf"
         return 1
     fi
     mkdir -p "${_web_root}/ssl"
