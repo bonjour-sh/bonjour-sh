@@ -23,6 +23,10 @@ _host_command_list() (
 
 _host_command_add() {
     _domain=$(_input 'domain' 'Domain name for the new web service' '' '' "$@")
+    if [ -z "$_domain" ]; then
+        printf 'Can not continue without a domain name\n'
+        return 1
+    fi
     _aliases=$(_input 'aliases' 'Domain alias (leave blank to skip)' '' '' "$@")
     if [ "$BONJOUR_NONINTERACTIVE" != "true" ] && [ -n "$_aliases" ]; then
         _prompt_alias
