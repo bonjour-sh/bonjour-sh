@@ -4,6 +4,7 @@
 
 _mariadb_install() (
     _package install mariadb-server
+    _config "$(_ local_etc)/mysql/my.cnf" '#' '=' 'port' "${mariadb_port}"
 )
 
 _mariadb_post_install_debian() (
