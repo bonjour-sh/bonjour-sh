@@ -218,6 +218,7 @@ _config() (
             printf "${_k}\n" >> "$_f" # sed below will set actual value
         fi
     fi
+    _f=$(realpath -- "$_f") # follow symlinks
     if sed --version 2>/dev/null | grep -q '^GNU'; then
         sed -i "s|${_match}|${_replace}|" "$_f"
     else
