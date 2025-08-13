@@ -7,6 +7,7 @@ _mariadb_install() (
 )
 
 _mariadb_post_install_debian() (
+    _package install mariadb-backup # not bundled on Debian so install separately
     _at_boot enable mariadb
 )
 
