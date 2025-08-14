@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ -d ~/bonjour-sh ] && rm -rf ~/bonjour-sh
+[ -d ~/bonjour-sh-master ] && rm -rf ~/bonjour-sh-master
 curl -L -o /tmp/bonjour-sh.tar.gz https://github.com/bonjour-sh/bonjour-sh/archive/refs/heads/master.tar.gz
 tar -xzf /tmp/bonjour-sh.tar.gz -C ~
 mv ~/bonjour-sh-master ~/bonjour-sh
