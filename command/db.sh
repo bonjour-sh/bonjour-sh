@@ -2,6 +2,20 @@
 #
 # Manage databases and users
 
+_db_command_list() (
+    _root_pass=$(bonjour env var mariadb_root_password)
+    [ -z "$_root_pass" ] && { echo 'mariadb_root_password not defined in ~/.bonjour.env'; exit 1; }
+    mysql -uroot -p${_root_pass} -e "SHOW databases;"
+)
+
+_db_command_add() (
+    _root_pass=$(bonjour env var mariadb_root_password)
+    [ -z "$_root_pass" ] && { echo 'mariadb_root_password not defined in ~/.bonjour.env'; exit 1; }
+    _name=$(_input 'name' 'New database name' '' '' "$@")
+    [ -z "$_name" ] && { echo 'Provide database name'; exit 1; }
+    mysql -uroot -p${_root_pass} -e "CREATE DATABASE \`${_name}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+)
+
 _db_command_user() (
     _root_pass=$(bonjour env var mariadb_root_password)
     [ -z "$_root_pass" ] && { echo 'mariadb_root_password not defined in ~/.bonjour.env'; exit 1; }
