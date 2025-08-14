@@ -18,6 +18,12 @@ _is_systemd_system() (
     return 1
 )
 
+_random_string() (
+    _length=$1
+    _allowed_characters=${2:-A-Za-z0-9_-}
+    LC_ALL=C tr -dc "$_allowed_characters" </dev/urandom | head -c "$_length"; echo
+)
+
 _input() (
     _name=$1 # shorthand to the name of requested variable
     _prompt_text=$2 # shorthand to the prompt text
