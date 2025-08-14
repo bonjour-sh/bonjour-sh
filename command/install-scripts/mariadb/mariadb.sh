@@ -2,8 +2,11 @@
 #
 # MariaDB installer
 
+mariadb_root_password_default=$(_random_string 24)
+
 _mariadb_install() (
     _package install mariadb-server
+    mysqladmin -u root password "${mariadb_root_password}"
     _config "$(_ local_etc)/mysql/my.cnf" '#' '=' 'port' "${mariadb_port}"
     if [ -n "$whitelisted_hosts" ]; then
         _firewall 'mariadb-restrict' flush
