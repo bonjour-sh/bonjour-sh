@@ -155,6 +155,7 @@ _system_install() {
     _package install git
     _package install unzip
     _package install fail2ban
+    _package install xmlstarlet # dealing with XML configs
     # Tools used to run backups
     _package install rsync
     _package install rsnapshot
@@ -247,6 +248,17 @@ _system_install() {
     # EOF above must be indented with 1 tab character
     _at_boot enable fail2ban true
 }
+
+_system_post_install_freebsd() (
+    _p_xmls='/usr/local/bin/xmlstarlet'
+    _p_xml='/usr/local/bin/xml'
+    if [ ! -f "$_p_xmls" ] && [ -x "$_p_xml" ]; then
+        if "$_p_xml" --help 2>/dev/null | grep -qi 'xmlstarlet'; then
+            ln -s "$_p_xml" "$_p_xmls"
+        fi
+    fi
+    unset -v _p_xmls _p_xml
+)
 
 _system_post_install_debian() {
     # Configure fail2ban on systemd (no /var/log/auth.log) - superuser.com/a/1838559
