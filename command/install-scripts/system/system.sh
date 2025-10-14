@@ -29,10 +29,11 @@ _system_prompt_server_ip() (
 )
 _system_prompt_ssh_pubkey() (
     _prompt_text=$1 # shorthand to prompt text
-    _defaults=$2 # shorthand to default value(s); not used here
+    _defaults= # shorthand to default value(s); only used in non-interactive
+    [ "$BONJOUR_NONINTERACTIVE" = 'true' ] && _defaults=$2
     _help=$3 # shorthand to help text
     shift 3 # drop first 3 args
-    _provided_pubkey=$(_input 'ssh_pubkey' "$_prompt_text" '' "$_help" "$@")
+    _provided_pubkey=$(_input 'ssh_pubkey' "$_prompt_text" "$_defaults" "$_help" "$@")
     # Make sure the provided public key is valid
     printf "$_provided_pubkey" | ssh-keygen -l -f - > /dev/null
     if [ $? -ne 0 ]; then
