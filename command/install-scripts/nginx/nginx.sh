@@ -17,7 +17,9 @@ _nginx_pre_install_debian() {
 
 _nginx_install() (
     _package install nginx
-    _package install certbot
+    if [ "${nginx_install_certbot:-false}" = true ]; then
+        _package install certbot
+    fi
     [ -d "${_local_etc}/nginx/sites-available" ] && rm -rf "${_local_etc}/nginx/sites-available"
     [ -d "${_local_etc}/nginx/sites-enabled" ] && rm -rf "${_local_etc}/nginx/sites-enabled"
     [ -d "${_local_etc}/nginx/modules-available" ] && rm -rf "${_local_etc}/nginx/modules-available"
@@ -100,17 +102,21 @@ _nginx_install() (
         echo "Invalid DH params file (received ${nginx_dhparam})" >&2
         return 1
     fi
-    # Reusable piece
-    cat > "${_local_etc}/nginx/snippets/certbot_standalone.conf" <<-'EOF'
-	location ^~ /.well-known/acme-challenge/ {
-	    auth_basic off;
-	    allow all;
-	    access_log /var/log/nginx/certbot.access.log;
-	    error_log /var/log/nginx/certbot.error.log;
-	    proxy_pass http://localhost:8008/.well-known/acme-challenge/;
-	}
-	EOF
-    # EOF above must be indented with 1 tab character
+    # Reusable piece for Certbot HTTP-01 challenge
+    if [ "${nginx_install_certbot:-false}" = true ]; then
+        cat > "${_local_etc}/nginx/snippets/certbot_standalone.conf" <<-'EOF'
+		location ^~ /.well-known/acme-challenge/ {
+		    auth_basic off;
+		    allow all;
+		    access_log /var/log/nginx/certbot.access.log;
+		    error_log /var/log/nginx/certbot.error.log;
+		    proxy_pass http://localhost:8008/.well-known/acme-challenge/;
+		}
+		EOF
+        # EOF above must be indented with 2 tab characters
+    else
+        : > "${_local_etc}/nginx/conf.d/default_server.conf"
+    fi
     cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-EOF
 	location / {
 	    if (!-d ${_www_root}/\$server_name/public) {
