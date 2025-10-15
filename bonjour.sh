@@ -10,11 +10,19 @@ fi
 BONJOUR_DEBUG="${BONJOUR_DEBUG:-false}"
 BONJOUR_NONINTERACTIVE="${BONJOUR_NONINTERACTIVE:-false}"
 BONJOUR_DIR=$(dirname $(realpath $0))
-BONJOUR_OS=$(
-    [ "$(uname -s)" = FreeBSD ] && echo freebsd || (
-        [ -f /etc/debian_version ] && echo debian || echo unknown
-    )
-)
+BONJOUR_OS=
+case "$(uname -s | tr '[:upper:]' '[:lower:]')" in
+    freebsd) BONJOUR_OS=freebsd ;;
+    linux)
+        if [ -f /etc/debian_version ]; then
+            BONJOUR_OS=debian
+        fi
+        ;;
+esac
+if [ -z "$BONJOUR_OS" ]; then
+    echo 'Unknown OS' >&2
+    exit 1
+fi
 export BONJOUR_DEBUG BONJOUR_DIR BONJOUR_OS
 
 printf "+------------------------------------------+\n" >&2
