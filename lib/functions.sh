@@ -2,6 +2,34 @@
 #
 # Reusable functions
 
+# _expand_opts - expands received arguments into local variables
+# Usage: _expand_opts OPTSTRING ARGS
+#   Invoke in a function where arguments it received need to be expanded into
+#   local variables in that function's scope AND some arguments are optional.
+# Arguments:
+#   $1 - OPTSTRING: accepted arguments according to getopts format (man getopts)
+#   $2 - ARGS: original arguments the invoking function received
+_expand_opts() {
+    _optstring=$1 # make a copy before shifting
+    shift 1 # reduce our $@ to the $@ we got from the invoking function
+    # In optstring every char represents allowed argument followed by optional :
+    # Keep only characters, so we know exactly how many arguments to expect
+    _optstring_chars=$(echo "$_optstring" | tr -cd '[:alpha:]')
+    # Loop through each argument and if valid, set a new variable
+    while IFS= read -r _optstring_char; do # loop through fold output below
+        # On each call, parses OPTSTRING-listed arguments one by one out of $@
+        getopts "$_optstring" OPT # OPT now contains the argument we're at
+        [ "_$OPT" != "_?" ] || continue # stop if this is not a valid argument
+        [ -n "$OPTARG" ] || OPTARG=true # argument with empty value is a flag
+        eval "$OPT=$OPTARG" # set the local variable
+    done <<-EOF
+	# Fold returns each character split on a new line, so while can loop easily
+	$(echo "$_optstring_chars" | fold -w1)
+	EOF
+    # Heredoc avoids pipes, which spawn separate subshell, losing variables
+    unset -v _optstring _optstring_chars _optstring_char # clean up
+}
+
 # Dictionary function, resolves os-specific value for passed key
 _() (
     if [ ! -f "${BONJOUR_DIR}/.${BONJOUR_OS}.env" ]; then
@@ -22,6 +50,46 @@ _random_string() (
     _length=$1
     _allowed_characters=${2:-A-Za-z0-9_-}
     LC_ALL=C tr -dc "$_allowed_characters" </dev/urandom | head -c "$_length"; echo
+)
+
+# _groupadd_once - ensures group exists on the system: check if exists, else add
+# Usage: _groupadd_once NAME
+# Arguments:
+#   $1 - NAME: name of the group that should exist on the system
+_groupadd_once() (
+    _group=$1 # make a copy into separate variable
+    [ -n "$_group" ] || return 1 # if missing return early
+    grep -q "^${_group}:" /etc/group && return 0 # if exists return early
+    groupadd "$_group" 2>/dev/null || pw groupadd "$_group"
+    return $?
+)
+
+# _useradd_once - ensures user exists on the system: check if exists, else add
+# Usage: _useradd_once NAME
+# Arguments:
+#   $1 - NAME: name of the user that should exist on the system
+#   -g - GROUP: default empty
+#   -d - DIR: home directory; default empty
+#   -s - SHELL: default to /bin/false
+_useradd_once() (
+    _user=$1 # make a copy into separate variable before doing shift below
+    [ -n "$_user" ] || return 1 # if missing return early
+    grep -q "^${_user}:" /etc/passwd && return 0 # if exists return early
+    shift 1 # clean up $@ before passing it to _expand_opts
+    _expand_opts 'g:d:s:' $@ # expecting useradd-compatible arguments
+    # Prepend argument flags and define defaults
+    [ -n "$g" ] && g="-g $g" || g=''
+    [ -n "$d" ] && d="-m -d $d" || d=''
+    [ -n "$s" ] && s="-s $s" || s='-s /bin/false'
+    if command -v useradd >/dev/null 2>&1; then
+        useradd $g $d $s "$_user"
+        return $?
+    fi
+    if command -v pw >/dev/null 2>&1; then
+        pw useradd "$_user" $g $d $s
+        return $?
+    fi
+    return 1
 )
 
 _input() (

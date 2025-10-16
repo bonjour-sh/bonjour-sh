@@ -201,7 +201,7 @@ _system_install() {
         # EOF above must be indented with 2 tab characters
         _dir_home="/home/${ssh_user}"
         # Create $ssh_user inside superuser group
-        $(_ useradd) "$ssh_user" -s /bin/sh -md "$_dir_home" -g "$(_ sudo_group)"
+        _useradd_once "$ssh_user" -s /bin/sh -d "$_dir_home" -g "$(_ sudo_group)"
         # Ensure .ssh folder with authorized_keys exists
         mkdir -p "${_dir_home}/.ssh"
         chmod 700 "${_dir_home}/.ssh"
