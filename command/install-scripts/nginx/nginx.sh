@@ -145,6 +145,7 @@ _nginx_install() (
 	        return 301 "http\${flag_https_s}://\${server_name}\${request_uri}";
 	    }
 	    root ${_www_root}/\$server_name/public;
+	    index index.php index.html index.htm;
 	    access_log /var/log/nginx/vhost-\$server_name.access.log;
 	    error_log off;
 	}
