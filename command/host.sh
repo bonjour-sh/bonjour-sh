@@ -54,8 +54,8 @@ _host_command_add() {
         return 1
     fi
     mkdir -p "${_web_home}/ssl"
-    ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_home}/ssl/cert"
-    ln -s "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_home}/ssl/key"
+    ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_home}/ssl/cert"
+    ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_home}/ssl/key"
     cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
