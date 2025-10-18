@@ -121,7 +121,7 @@ _nginx_install() (
 		EOF
         # EOF above must be indented with 2 tab characters
     else
-        : > "${_local_etc}/nginx/conf.d/default_server.conf"
+        : > "${_local_etc}/nginx/snippets/certbot_standalone.conf"
     fi
     cat > "${_local_etc}/nginx/snippets/vhost.conf" <<-EOF
 	location / {
