@@ -15,6 +15,12 @@ _nginx_pre_install_debian() {
     wget https://nginx.org/keys/nginx_signing.key -O - | apt-key add -
 }
 
+_nginx_pre_install() (
+    # Ensures installing newest certbot with newest dependencies
+    _package delete certbot
+    _package autoremove # ensures dependencies like py311-acme are deleted
+)
+
 _nginx_install() (
     _package install nginx
     if [ "${nginx_install_certbot:-false}" = true ]; then
