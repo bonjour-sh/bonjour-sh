@@ -168,6 +168,21 @@ _nginx_install() (
 	add_header Strict-Transport-Security max-age=15768000;
 	EOF
     # EOF above must be indented with 1 tab character
+    # Setup for future Nginx backends
+    mkdir "${_local_etc}/nginx/snippets/backend" # folder where we keep snippets
+    cat > "${_local_etc}/nginx/snippets/backend/README.md" <<-EOF
+	Each file here is a configuration for a specific type of backend for Nginx.
+	Usage: include required snippet into website/host configuration.
+	
+	Example 1: create a symlink
+	
+	    ln -s ${_local_etc}/nginx/snippets/backend/\$backend.conf ${_www_root}/\$server_name/nginx.backend.conf
+	
+	Example 2: use `include` statement
+	
+	    echo 'include ${_local_etc}/nginx/snippets/backend/\$backend.conf;' > ${_www_root}/\$server_name/nginx.backend.conf
+	EOF
+    # EOF above must be indented with 1 tab character
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
     chown -R "${_www_user}:${_www_group}" "/var/log/nginx"
