@@ -34,6 +34,7 @@ _system_prompt_ssh_pubkey() (
     _help=$3 # shorthand to help text
     shift 3 # drop first 3 args
     _provided_pubkey=$(_input 'ssh_pubkey' "$_prompt_text" "$_defaults" "$_help" "$@")
+    [ -z "$_provided_pubkey" ] && return # Stop if nothing was provided
     # Make sure the provided public key is valid
     printf "$_provided_pubkey" | ssh-keygen -l -f - > /dev/null
     if [ $? -ne 0 ]; then
@@ -218,8 +219,8 @@ _system_install() {
     else
         _dir_home="$HOME"
     fi
-    # Append public key only if not present yet
-    _insert_once "$ssh_pubkey" "${_dir_home}/.ssh/authorized_keys"
+    # Append public key only if provided and not present yet
+    [ -n "$ssh_pubkey" ] && _insert_once "$ssh_pubkey" "${_dir_home}/.ssh/authorized_keys"
     # Generate all missing SSH host keys (RSA, ECDSA, ED25519, etc.)
     # Used to ensure proper SSH host identity on first boot or after system provisioning.
     ssh-keygen -A
