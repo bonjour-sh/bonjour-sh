@@ -23,7 +23,8 @@ _icecast_install() {
         mv "${_icecast_config_path}.sample" "$_icecast_config_path"
     fi
     _groupadd_once "$icecast_group"
-    _useradd_once "$icecast_user" -g "$icecast_group"
+    _home="/home/${icecast_user}"
+    _useradd_once "$icecast_user" -g "$icecast_group" -d "$_home"
     # Make sure <changeowner> is NOT commented out, Icecast will not run as root
     # To uncomment with xmlstarlet, delete everything and re-create
     # 1. delete <security> block including tags that may or may not be commented
