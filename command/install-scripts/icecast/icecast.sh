@@ -25,17 +25,19 @@ _icecast_install() {
     _groupadd_once "$icecast_group"
     _useradd_once "$icecast_user" -g "$icecast_group"
     # Make sure <changeowner> is NOT commented out, Icecast will not run as root
-    # To uncomment with xmlstarlet, delete both comment and tag, and re-create
-    # 1. delete commented-out blocks, including <changeowner> if it's commented
-    # 2. prevent duplicates by deleting <changeowner> that wasn't commented
-    # 3. insert new, clean <changeowner>
-    # 4. and 5. set user and group
+    # To uncomment with xmlstarlet, delete everything and re-create
+    # 1. delete <security> block including tags that may or may not be commented
+    # 2. re-create <security>
+    # 3. insert <chroot> and set it to 0
+    # 4. insert new, clean <changeowner>
+    # 5. and 6. set user and group
     xmlstarlet ed \
-        -d '//security/comment()' \
-        -d '//security/changeowner' \
-        -s '//security' -t elem -n 'changeowner' -v '' \
-        -s '//security/changeowner' -t elem -n 'user' -v "$icecast_user" \
-        -s '//security/changeowner' -t elem -n 'group' -v "$icecast_group" \
+        -d '/icecast/security' \
+        -s '/icecast' -t elem -n 'security' -v '' \
+        -s '/icecast/security' -t elem -n 'chroot' -v '0' \
+        -s '/icecast/security' -t elem -n 'changeowner' -v '' \
+        -s '/icecast/security/changeowner' -t elem -n 'user' -v "$icecast_user" \
+        -s '/icecast/security/changeowner' -t elem -n 'group' -v "$icecast_group" \
         "$_icecast_config_path" > "${_icecast_config_path}.tmp"
     mv "${_icecast_config_path}.tmp" "$_icecast_config_path"
     # Make sure user can write to log directory, else Icecast will not run
