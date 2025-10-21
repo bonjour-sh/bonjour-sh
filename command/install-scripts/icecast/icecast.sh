@@ -25,9 +25,10 @@ _icecast_install() {
     _groupadd_once "$icecast_group"
     _useradd_once "$icecast_user" -g "$icecast_group"
     # Make sure <changeowner> is NOT commented out, Icecast will not run as root
-    # 1. delete any commented-out sections
-    # 2. delete existing <changeowner> block
-    # 3. insert new clean <changeowner>
+    # To uncomment with xmlstarlet, delete both comment and tag, and re-create
+    # 1. delete commented-out blocks, including <changeowner> if it's commented
+    # 2. prevent duplicates by deleting <changeowner> that wasn't commented
+    # 3. insert new, clean <changeowner>
     # 4. and 5. set user and group
     xmlstarlet ed \
         -d '//security/comment()' \
