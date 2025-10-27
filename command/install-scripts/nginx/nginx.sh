@@ -178,7 +178,7 @@ _nginx_install() (
 	
 	    ln -s ${_local_etc}/nginx/snippets/backend/\$backend.conf ${_www_root}/\$server_name/nginx.backend.conf
 	
-	Example 2: use `include` statement
+	Example 2: use include statement
 	
 	    echo 'include ${_local_etc}/nginx/snippets/backend/\$backend.conf;' > ${_www_root}/\$server_name/nginx.backend.conf
 	EOF

@@ -53,7 +53,7 @@ _icecast_install() {
 	# - create a new host and use this snippet as backend - see ./README.md
 	# - in icecast.xml set icecast/listen-socket/bind-address to 127.0.0.1
 	#   that will ensure Icecast can only be accessed through Nginx
-	location ~ ^/ { # can't be `location /` because it's already used
+	location ~ ^/ { # can't be location / because it's already used
 	    proxy_pass http://127.0.0.1:8000;
 	    proxy_redirect off;
 	    proxy_set_header Host \$host;
