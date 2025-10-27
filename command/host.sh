@@ -46,16 +46,23 @@ _host_command_add() {
 	EOF
     mkdir -p "${_web_home}"
     mkdir -p "${_web_home}/public"
-    service nginx restart
-    _certbot_certonly "${_domain} ${_aliases}"
-    if [ $? -ne 0 ]; then
-        echo "Certbot failed. Aborting."
-        rm "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf"
-        return 1
+    if [ ! -f "${_web_home}/ssl/cert" ] || [ ! -f "${_web_home}/ssl/key" ]; then
+        if [ "$(bonjour env var nginx_install_certbot)" = 'true' ]; then
+            service nginx restart
+            _certbot_certonly "${_domain} ${_aliases}"
+            if [ $? -ne 0 ]; then
+                echo "Certbot failed. Aborting."
+                rm "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf"
+                return 1
+            fi
+            mkdir -p "${_web_home}/ssl"
+            ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_home}/ssl/cert"
+            ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_home}/ssl/key"
+        fi
     fi
-    mkdir -p "${_web_home}/ssl"
-    ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/fullchain.pem" "${_web_home}/ssl/cert"
-    ln -fs "$(_ local_etc)/letsencrypt/live/${_domain}/privkey.pem" "${_web_home}/ssl/key"
+    if [ ! -f "${_web_home}/ssl/cert" ] || [ ! -f "${_web_home}/ssl/key" ]; then
+        return 0
+    fi
     cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
