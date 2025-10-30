@@ -32,6 +32,8 @@ _nginx_install() (
     [ -d "${_local_etc}/nginx/modules-enabled" ] && rm -rf "${_local_etc}/nginx/modules-enabled"
     [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
     [ -d "${_local_etc}/nginx/snippets" ] && rm -rf "${_local_etc}/nginx/snippets"
+    # Individual load_module calls included at the top of nginx.conf
+    mkdir -p "${_local_etc}/nginx/modules.d"
     # Root http{} block in nginx.conf includes server{} configs from here
     mkdir -p "${_local_etc}/nginx/conf.http.d"
     # Reusable parts to be included in individual configs
@@ -40,6 +42,7 @@ _nginx_install() (
     mkdir -p "$_www_root"
     # Main
     cat > "${_local_etc}/nginx/nginx.conf" <<-EOF
+	include modules.d/*.conf;
 	user ${_www_user};
 	worker_processes 4;
 	pid /var/run/nginx.pid;
@@ -183,6 +186,30 @@ _nginx_install() (
 	    echo 'include ${_local_etc}/nginx/snippets/backend/\$backend.conf;' > ${_www_root}/\$server_name/nginx.backend.conf
 	EOF
     # EOF above must be indented with 1 tab character
+    # Install stream module if requested
+    if [ "${nginx_install_mod_stream:-false}" = true ]; then
+        # Root stream{} block in nginx.conf includes server{} configs from here
+        mkdir -p "${_local_etc}/nginx/conf.stream.d"
+        cat > "${_local_etc}/nginx/conf.stream.d/README.md" <<-EOF
+		Individual server{} configurations included in root stream{} block. E.g:
+		
+		server {
+		    server_name example;
+		    listen 9000 default_server;
+		    proxy_pass 127.0.0.1:9000;
+		}
+		EOF
+        # EOF above must be indented with 2 tab characters
+        # Copy path to Nginx modules directory into variable
+        _modules_path=$(nginx -V 2>&1 | sed -n 's/.*--modules-path=\([^ ]*\).*/\1/p')
+        # Load ngx_stream_module if present on the filesystem
+        if [ -f "${_modules_path}/ngx_stream_module.so" ]; then
+            echo "load_module ${_modules_path}/ngx_stream_module.so;" \
+                > "${_local_etc}/nginx/modules.d/stream.conf"
+            # Else assume we're on Debian and it's already enabled
+        fi
+        _insert_once 'stream {include conf.stream.d/*.conf;}' "${_local_etc}/nginx/nginx.conf"
+    fi
     # Make sure the permissions are correct
     chown -R "${_www_user}:${_www_group}" "${_local_etc}/nginx"
     chown -R "${_www_user}:${_www_group}" "/var/log/nginx"
