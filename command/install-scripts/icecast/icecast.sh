@@ -35,6 +35,8 @@ _icecast_install() {
     # also:
     # 7. ensure Icecast binds to all interfaces by default
     # 8. set Icecast port
+    # also:
+    # 9-11. Recreate authentication with admin user and password
     xmlstarlet ed \
         -d '/icecast/security' \
         -s '/icecast' -t elem -n 'security' -v '' \
@@ -44,6 +46,10 @@ _icecast_install() {
         -s '/icecast/security/changeowner' -t elem -n 'group' -v "$icecast_group" \
         -u '/icecast/listen-socket/bind-address' -v '0.0.0.0' \
         -u '/icecast/listen-socket/port' -v "$icecast_port" \
+        -d '/icecast/authentication' \
+        -s '/icecast' -t elem -n 'authentication' -v '' \
+        -s '/icecast/authentication' -t elem -n 'admin-user' -v "$icecast_admin_username" \
+        -s '/icecast/authentication' -t elem -n 'admin-password' -v "$icecast_admin_password" \
         "$_icecast_config_path" > "${_icecast_config_path}.tmp"
     mv "${_icecast_config_path}.tmp" "$_icecast_config_path"
     # Make sure user can write to log directory, else Icecast will not run
