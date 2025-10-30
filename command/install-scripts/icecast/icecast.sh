@@ -32,7 +32,9 @@ _icecast_install() {
     # 3. insert <chroot> and set it to 0
     # 4. insert new, clean <changeowner>
     # 5. and 6. set user and group
+    # also:
     # 7. ensure Icecast binds to all interfaces by default
+    # 8. set Icecast port
     xmlstarlet ed \
         -d '/icecast/security' \
         -s '/icecast' -t elem -n 'security' -v '' \
@@ -41,6 +43,7 @@ _icecast_install() {
         -s '/icecast/security/changeowner' -t elem -n 'user' -v "$icecast_user" \
         -s '/icecast/security/changeowner' -t elem -n 'group' -v "$icecast_group" \
         -u '/icecast/listen-socket/bind-address' -v '0.0.0.0' \
+        -u '/icecast/listen-socket/port' -v "$icecast_port" \
         "$_icecast_config_path" > "${_icecast_config_path}.tmp"
     mv "${_icecast_config_path}.tmp" "$_icecast_config_path"
     # Make sure user can write to log directory, else Icecast will not run
@@ -62,20 +65,20 @@ _icecast_install() {
 		# - in icecast.xml, having icecast/listen-socket/bind-address=127.0.0.1
 		#   ensures Icecast can only be accessed through Nginx
 		location ~ ^/ { # can't be location / because it's already used
-		    proxy_pass http://127.0.0.1:8000;
+		    proxy_pass http://127.0.0.1:$icecast_port;
 		    proxy_redirect off;
 		    proxy_set_header Host \$host;
 		    proxy_set_header X-Real-IP \$remote_addr;
 		    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
 		}
 		EOF
-        # Add STREAM proxy for sources (including HTTP 1.0); expose 8000 port
+        # Add STREAM proxy for sources (including HTTP 1.0); expose Icecast port
         cat > "${_local_etc}/nginx/conf.stream.d/default_icecast.conf" <<-EOF
 		# Sources don't reach Icecast when behind http{} proxy, has to be stream{}
 		server {
 		    server_name default_icecast;
-		    listen 8000 default_server;
-		    proxy_pass 127.0.0.1:8000;
+		    listen $icecast_port default_server;
+		    proxy_pass 127.0.0.1:$icecast_port;
 		}
 		EOF
     fi
