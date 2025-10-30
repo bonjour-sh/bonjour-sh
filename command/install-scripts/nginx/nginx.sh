@@ -32,8 +32,8 @@ _nginx_install() (
     [ -d "${_local_etc}/nginx/modules-enabled" ] && rm -rf "${_local_etc}/nginx/modules-enabled"
     [ -d "${_local_etc}/nginx/conf.d" ] && rm -rf "${_local_etc}/nginx/conf.d"
     [ -d "${_local_etc}/nginx/snippets" ] && rm -rf "${_local_etc}/nginx/snippets"
-    # Whole files included in main nginx.conf as conf.d/*.conf
-    mkdir -p "${_local_etc}/nginx/conf.d"
+    # Root http{} block in nginx.conf includes server{} configs from here
+    mkdir -p "${_local_etc}/nginx/conf.http.d"
     # Reusable parts to be included in individual configs
     mkdir -p "${_local_etc}/nginx/snippets"
     # Create WWW root
@@ -66,12 +66,12 @@ _nginx_install() (
 	    gzip_http_version 1.1;
 	    gzip_min_length 256;
 	    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/x-javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype image/svg+xml image/x-icon application/x-font-opentype application/x-font-truetype font/eot font/otf image/vnd.microsoft.icon;
-	    include ${_local_etc}/nginx/conf.d/*.conf;
+	    include conf.http.d/*.conf;
 	}
 	EOF
     # EOF above must be indented with 1 tab character
     # Default server
-    cat > "${_local_etc}/nginx/conf.d/default_server.conf" <<-EOF
+    cat > "${_local_etc}/nginx/conf.http.d/default_server.conf" <<-EOF
 	server {
 	    server_name _;
 	    listen 80 default_server;
@@ -130,7 +130,7 @@ _nginx_install() (
 	    }
 	    # Ensure redirect to 1. primary domain and 2. HTTPs if available
 	    set \$flag_https_s ""; # default to no HTTPs
-	    if (-f ${_local_etc}/nginx/conf.d/vhost_\${server_name}_443.conf) {
+	    if (-f ${_local_etc}/nginx/conf.http.d/vhost_\${server_name}_443.conf) {
 	        set \$flag_https_s "s"; # plan redirect if HTTPs config exists
 	    }
 	    if (\$scheme = https) {

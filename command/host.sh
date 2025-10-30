@@ -13,7 +13,7 @@ _prompt_alias() {
 }
 
 _host_command_list() (
-    for _vhost in $(_ local_etc)/nginx/conf.d/vhost_*_*.conf; do
+    for _vhost in $(_ local_etc)/nginx/conf.http.d/vhost_*_*.conf; do
         IFS=_ read -r _prefix _host _port <<-EOF
 		$(basename $_vhost '.conf')
 		EOF
@@ -36,7 +36,7 @@ _host_command_add() {
         _prompt_alias
     fi
     _web_home="$(_host_command_home ${_domain})"
-    cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf" <<-EOF
+    cat > "$(_ local_etc)/nginx/conf.http.d/vhost_${_domain}_80.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
 	    listen 80;
@@ -52,7 +52,7 @@ _host_command_add() {
             _certbot_certonly "${_domain} ${_aliases}"
             if [ $? -ne 0 ]; then
                 echo "Certbot failed. Aborting."
-                rm "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_80.conf"
+                rm "$(_ local_etc)/nginx/conf.http.d/vhost_${_domain}_80.conf"
                 return 1
             fi
             mkdir -p "${_web_home}/ssl"
@@ -63,7 +63,7 @@ _host_command_add() {
     if [ ! -f "${_web_home}/ssl/cert" ] || [ ! -f "${_web_home}/ssl/key" ]; then
         return 0
     fi
-    cat > "$(_ local_etc)/nginx/conf.d/vhost_${_domain}_443.conf" <<-EOF
+    cat > "$(_ local_etc)/nginx/conf.http.d/vhost_${_domain}_443.conf" <<-EOF
 	server {
 	    server_name ${_domain} ${_aliases};
 	    listen 443 ssl;
