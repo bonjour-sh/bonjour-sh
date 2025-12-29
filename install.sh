@@ -17,4 +17,5 @@ fi
 tar -xzf /tmp/bonjour-sh.tar.gz -C ~
 mv ~/bonjour-sh-master ~/bonjour-sh
 chmod +x ~/bonjour-sh/bonjour.sh
+[ -d /usr/local/bin ] || mkdir -p /usr/local/bin
 ln -sf "$(realpath ~)/bonjour-sh/bonjour.sh" /usr/local/bin/bonjour
