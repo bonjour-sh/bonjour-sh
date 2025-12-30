@@ -32,7 +32,7 @@ _db_command_user() (
                 'Providing schema name grants privileges on that schema only; * adds to all schemas' "$@")
             [ "_$_remote" = '_true' ] && _host='%' || _host='localhost'
             mysql -uroot -p${_root_pass} -e "CREATE USER '${_name}'@'${_host}' IDENTIFIED BY '${_pass}';"
-            mysql -uroot -p${_root_pass} -e "GRANT ALL PRIVILEGES ON ${_schema}.* TO '${_name}'@'${_host}' WITH GRANT OPTION;"
+            mysql -uroot -p${_root_pass} -e "GRANT ALL PRIVILEGES ON \`${_schema}\`.* TO '${_name}'@'${_host}' WITH GRANT OPTION;"
             ;;
         drop)
             _name=$(_input 'name' 'User to drop' '' '' "$@")
