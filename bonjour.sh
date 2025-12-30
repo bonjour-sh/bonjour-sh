@@ -25,11 +25,13 @@ if [ -z "$BONJOUR_OS" ]; then
 fi
 export BONJOUR_DEBUG BONJOUR_DIR BONJOUR_OS
 
-printf "+------------------------------------------+\n" >&2
-printf "| %-40s |\n" "`date`" >&2
-printf "|                                          |\n" >&2
-printf "|`tput bold` %-40s `tput sgr0`|\n" "$0 on $BONJOUR_OS" >&2
-printf "+------------------------------------------+\n\n" >&2
+$BONJOUR_DEBUG && printf '%s\n' \
+"+------------------------------------------+
+| $(printf '%-40s' "$(date)") |
+|                                          |
+| $(tput bold)$(printf '%-40s' "$0 on $BONJOUR_OS")$(tput sgr0) |
++------------------------------------------+
+" >&2
 
 # Read our configuration, if any
 if [ -f "${HOME}/.bonjour.env" ]; then
