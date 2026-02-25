@@ -63,9 +63,14 @@ fi
 # See if a specific subcommand was requested
 if [ -n "$1" ] && [ "_$1" = "_$(printf "%s" "$1" | tr -dc '[:alnum:]')" ]; then
     _subcommand_name="$1"
-    # First argument is subcommand name. Don't pass it to subcommand function.
+fi
+# If a function specifically for this subcommand has indeed been defined
+_func="_${_command_name}_command_${_subcommand_name}"
+if type "$_func" 2>/dev/null | grep -q 'function'; then
+    # First argument is subcommand name, don't pass it to subcommand function
     shift 1
-    "_${_command_name}_command_${_subcommand_name}" "$@"
+    "$_func" "$@"
 else
+    # Default to function based on just command name, pass all arguments to it
     "_${_command_name}_command" "$@"
 fi
