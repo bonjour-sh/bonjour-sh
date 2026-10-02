@@ -89,7 +89,9 @@ _system_pre_install_debian() {
 
 _system_pre_install_freebsd() (
     # Fetch and install pkg non-interactively
-    env ASSUME_ALWAYS_YES=yes pkg bootstrap
+    env ASSUME_ALWAYS_YES=yes pkg bootstrap || exit 1
+    # Explicitly update local copies of enabled repository catalogues
+    pkg update -f || exit 1
     _at_boot enable ntpd true
     sysrc ntpd_sync_on_start=YES
     # Create basic pf config allowing all traffic (matching Debian's default)
