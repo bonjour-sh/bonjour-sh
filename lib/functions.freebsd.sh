@@ -50,7 +50,7 @@ _package() (
         install)
             _package_resolved=$(_package_resolve $2)
             [ "$BONJOUR_DEBUG" ] && echo "_package install ${2}/${_package_resolved}" >&2
-            pkg install -y -f "$_package_resolved"
+            pkg install -U -y -f "$_package_resolved"
             ;;
         purge)
             pkg delete -y -f $2*

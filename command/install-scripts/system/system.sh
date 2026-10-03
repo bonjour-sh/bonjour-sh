@@ -92,6 +92,8 @@ _system_pre_install_freebsd() (
     env ASSUME_ALWAYS_YES=yes pkg bootstrap || exit 1
     # Explicitly update local copies of enabled repository catalogues
     pkg update -f || exit 1
+    # Now we can disable auto check for updates to speed up installation
+    _config '/usr/local/etc/pkg.conf' '#' '=' 'REPO_AUTOUPDATE' 'false'
     _at_boot enable ntpd true
     sysrc ntpd_sync_on_start=YES
     # Create basic pf config allowing all traffic (matching Debian's default)
@@ -255,6 +257,8 @@ _system_install() {
 }
 
 _system_post_install_freebsd() (
+    # Re-enable auto check for updates
+    _config '/usr/local/etc/pkg.conf' '#' '=' 'REPO_AUTOUPDATE' 'true'
     _p_xmls='/usr/local/bin/xmlstarlet'
     _p_xml='/usr/local/bin/xml'
     if [ ! -f "$_p_xmls" ] && [ -x "$_p_xml" ]; then
