@@ -203,6 +203,7 @@ _system_install() {
     if [ -n "$ssh_user" ]; then
         _config '/etc/ssh/sshd_config' '#' ' ' <<-EOF
 		PermitRootLogin no     # Disable root login
+		UseDNS no              # Avoid login delays if client DNS doesnt resolve
 		AllowUsers ${ssh_user} # Whitelist the non-SSH user
 		EOF
         # EOF above must be indented with 2 tab characters
