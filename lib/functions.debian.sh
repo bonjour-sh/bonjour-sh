@@ -57,10 +57,12 @@ _package() (
 #   $2 - SERVICE: service name
 #   $3 - ACT_IMMEDIATELY: true to start/stop (depending on ACTION) the service now
 _at_boot() (
+    update-rc.d "$2" defaults # ensure service symlinks registered at runlevels
     case "$1" in
-        'enable') update-rc.d "$2" defaults ;;
-        'disable') update-rc.d -f "$2" remove ;;
+        'enable') update-rc.d "$2" enable ;;
+        'disable') update-rc.d "$2" disable ;;
     esac
+    _is_systemd_system && systemctl daemon-reload # ensure systemd reads updates
     if [ "_$3" = "_true" ]; then
         service "$2" $( [ "_$1" = "_enable" ] && echo start || echo stop )
     fi
