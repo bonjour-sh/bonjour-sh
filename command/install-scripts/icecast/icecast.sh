@@ -15,6 +15,17 @@ if [ -z "$_icecast_config_path" ]; then
     _icecast_config_path="${_local_etc}/${_icecast_package_name}/icecast.xml"
 fi
 
+_icecast_pre_install_debian() (
+    # Make sure package providing /etc/mime.types is installed
+    _package install media-types
+)
+
+_icecast_pre_install_freebsd() (
+    # FreeBSD does not have media-types package, fetch /etc/mime.types directly
+    status=$(curl -s -w '%{http_code}' -o '/tmp/mime.types' "https://sources.debian.org/data/main/m/media-types/14.0.0/mime.types")
+    [ "_$status" = '_200' ] && mv '/tmp/mime.types' '/etc/mime.types'
+)
+
 _icecast_install() {
     _package install "$_icecast_package_name"
     set -x
