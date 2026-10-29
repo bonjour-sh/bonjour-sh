@@ -96,6 +96,8 @@ _system_pre_install_freebsd() (
     _config '/usr/local/etc/pkg.conf' '#' '=' 'REPO_AUTOUPDATE' 'false'
     _at_boot enable ntpd true
     sysrc ntpd_sync_on_start=YES
+    # Make sure we have sysrc
+    _package install FreeBSD-bsdconfig
     # Create basic pf config allowing all traffic (matching Debian's default)
     cat > /etc/pf.conf <<-EOF
 	set skip on lo
