@@ -32,6 +32,7 @@ $BONJOUR_DEBUG && printf '%s\n' \
 | $(tput bold)$(printf '%-40s' "$0 on $BONJOUR_OS")$(tput sgr0) |
 +------------------------------------------+
 " >&2
+$BONJOUR_DEBUG && set -x
 
 # Read our configuration, if any
 if [ -f "${HOME}/.bonjour.env" ]; then

@@ -28,7 +28,6 @@ _icecast_pre_install_freebsd() (
 
 _icecast_install() {
     _package install "$_icecast_package_name"
-    set -x
     # Copy config from sample, if any
     if [ -f "${_icecast_config_path}.sample" ]; then
         mv "${_icecast_config_path}.sample" "$_icecast_config_path"
@@ -102,7 +101,6 @@ _icecast_install() {
 }
 
 _icecast_post_install() {
-    set -x
     # Enable and start
     _at_boot enable "$_icecast_package_name" true
 }

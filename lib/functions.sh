@@ -310,12 +310,12 @@ _certbot_certonly() (
         [ -n "$_csv" ] && _csv="${_csv},"
         _csv="${_csv}${_d}"
     done
-    set -x
+    $BONJOUR_DEBUG || set -x  # BONJOUR_DEBUG enables this anyway
     certbot certonly $_non_interactive --agree-tos \
         --standalone --http-01-port "$_port" \
         --email "webmaster@${_domain}" \
         --domains "$_csv"
     _result=$?
-    set +x
+    $BONJOUR_DEBUG || set +x  # do not disable if in BONJOUR_DEBUG
     exit $_result
 )
